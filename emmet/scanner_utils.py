@@ -13,7 +13,7 @@ def eat_quoted(scanner, options={}):
     Returns `True` if quoted string was consumed. The contents of quoted string
     will be available as `scanner.current()`
     """
-    options = { **QUOTED_OPT, **options }
+    options = create_options(options)
     start = scanner.pos
     quote = scanner.peek()
 
@@ -35,7 +35,7 @@ def eat_quoted(scanner, options={}):
     return False
 
 def eat_pair(scanner, open_ch: str, close_ch: str, options={}):
-    options = { **QUOTED_OPT, **options }
+    options = create_options(options)
     start = scanner.pos
 
     if scanner.eat(open_ch):
@@ -62,3 +62,12 @@ def eat_pair(scanner, open_ch: str, close_ch: str, options={}):
             raise scanner.error('Unable to find matching pair for %s' % open_ch)
 
     return False
+
+def create_options(opt={}):
+    options = {
+        'escape': '\\',
+        'throws': False
+    }
+
+    options.update(opt)
+    return options

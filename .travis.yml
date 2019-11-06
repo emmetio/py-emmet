@@ -1,8 +1,8 @@
 language: python
+dist: trusty
 python:
-  - "3.4"
+  - "3.3"
   - "3.7"
-  - "3.8"
 
 script:
   - python -m unittest
