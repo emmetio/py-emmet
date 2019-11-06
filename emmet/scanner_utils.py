@@ -1,7 +1,13 @@
-QUOTED_OPT = {
-    'escape': '\\',
-    'throws': False
-}
+
+nbsp = chr(160)
+
+def is_white_space(ch: str):
+    "Check if given character code is a white-space character: a space character without line breaks"
+    return ch == ' ' or ch == '\t' or ch == nbsp
+
+def is_space(ch: str):
+    "Check if given character code is a space character"
+    return is_white_space(ch) or ch == '\n' or ch == '\r'
 
 def is_quote(ch: str):
     "Check if given character code is a quote character"
