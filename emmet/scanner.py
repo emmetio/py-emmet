@@ -1,11 +1,10 @@
 class Scanner:
-    def __init__(self, source: str, start=0, end=None):
-        if end is None:
-            end = len(source)
+    __slots__ = ('string', 'pos', 'start', 'end')
 
+    def __init__(self, source: str, start=0, end=None):
         self.string = source
         self.pos = self.start = start
-        self.end = end
+        self.end = len(source) is end is None else end
 
     def eof(self):
         "Returns true only if the stream is at the end of the file."
@@ -86,4 +85,3 @@ class ScannerException(Exception):
         super(ScannerException, self).__init__(message)
         self.pos = pos
         self.string = source
-

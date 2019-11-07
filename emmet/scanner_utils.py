@@ -1,5 +1,22 @@
-
 nbsp = chr(160)
+
+def is_number(ch: str):
+    "Check if given code is a number"
+    return ch.isdecimal()
+
+def is_alpha(ch: str):
+    "Check if given character code is alpha code (letter through A to Z)"
+    return 'a' <= ch <= 'z' or 'A' <= ch <= 'Z'
+
+def is_alpha_numeric(ch: str):
+    "Check if given character code is alpha-numeric (letter through A to Z or number)"
+    return is_number(ch) or is_alpha(ch)
+
+def is_alpha_numeric_word(ch: str):
+    return is_number(ch) or is_alpha_word(ch)
+
+def is_alpha_word(ch: str):
+    return ch == '_' or is_alpha(ch)
 
 def is_white_space(ch: str):
     "Check if given character code is a white-space character: a space character without line breaks"
