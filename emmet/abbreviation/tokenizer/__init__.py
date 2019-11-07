@@ -39,7 +39,7 @@ def tokenize(source: str):
         if token:
             result.append(token)
             if token.type == 'Quote':
-                ctx['quote'] = None if ch == ctx.quote else ch
+                ctx['quote'] = None if ch == ctx['quote'] else ch
             elif token.type == 'Bracket':
                 ctx[token.context] += 1 if token.open else -1
         else:

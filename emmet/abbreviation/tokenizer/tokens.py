@@ -10,6 +10,9 @@ class Token:
         "Type of current token"
         return self.__class__.__name__
 
+    def to_json(self):
+        return dict([(k, self.__getattribute__(k)) for k in dir(self) if not k.startswith('__') and k != 'to_json'])
+
 class Repeater(Token):
     __slots__ = ('count', 'value', 'implicit')
 
