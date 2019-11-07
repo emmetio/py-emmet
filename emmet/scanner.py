@@ -4,7 +4,7 @@ class Scanner:
     def __init__(self, source: str, start=0, end=None):
         self.string = source
         self.pos = self.start = start
-        self.end = len(source) is end is None else end
+        self.end = len(source) if end is None else end
 
     def eof(self):
         "Returns true only if the stream is at the end of the file."

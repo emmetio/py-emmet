@@ -1,9 +1,9 @@
 from ...scanner import Scanner
 from ...scanner_utils import is_quote, is_space, is_number, is_alpha
 from .utils import Chars, escaped
-import .tokens
+from . import tokens
 
-OPERATOR_TYPES = dict(
+OPERATOR_TYPES = dict([
     (Chars.Child, 'child'),
     (Chars.Sibling, 'sibling'),
     (Chars.Climb, 'climb'),
@@ -11,7 +11,7 @@ OPERATOR_TYPES = dict(
     (Chars.Hash, 'id'),
     (Chars.Slash, 'close'),
     (Chars.Equals, 'equal')
-)
+])
 
 
 def tokenize(source: str):
@@ -56,7 +56,7 @@ def literal(scanner: Scanner, ctx: dict):
         "Consumes literal from given scanner"
         ch = scanner.peek()
 
-        if ch == ctx['quote'] or ch === Chars.Dollar or is_allowed_operator(ch, ctx):
+        if ch == ctx['quote'] or ch == Chars.Dollar or is_allowed_operator(ch, ctx):
             # 1. Found matching quote
             # 2. The `$` character has special meaning in every context
             # 3. Depending on context, some characters should be treated as operators
