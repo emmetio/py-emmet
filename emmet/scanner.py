@@ -82,6 +82,7 @@ class Scanner:
 
 class ScannerException(Exception):
     def __init__(self, message: str, pos: int, source: str):
-        super(ScannerException, self).__init__(message)
-        self.pos = pos
+        super(ScannerException, self).__init__()
+        self.message = message
         self.string = source
+        self.pos = pos

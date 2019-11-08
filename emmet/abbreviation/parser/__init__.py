@@ -32,7 +32,7 @@ class TokenGroup:
         self.repeat = None
 
 
-def abbreviation(abbr: list, options: dict={}):
+def parse(abbr: list, options: dict={}):
     scanner = TokenScanner(abbr)
     result = statements(scanner, options)
     if scanner.readable():
