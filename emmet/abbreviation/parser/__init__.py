@@ -1,4 +1,4 @@
-from .token_scanner import TokenScanner, TokenScannerException
+from ...token_scanner import TokenScanner, TokenScannerException
 from ..tokenizer import tokens
 
 class TokenAttribute:
