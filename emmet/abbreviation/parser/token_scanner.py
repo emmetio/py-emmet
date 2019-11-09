@@ -19,7 +19,7 @@ class TokenScanner:
         return self.tokens[start:end]
 
     def readable(self):
-        return self.start < self.size
+        return self.pos < self.size
 
     def consume(self, test: callable):
         token = self.peek()
@@ -38,7 +38,7 @@ class TokenScanner:
         if token is None: token = self.peek()
         pos = None
         if token and token.start is not None:
-            pos = token['start']
+            pos = token.start
             message += ' at %d' % pos
         return TokenScannerException(message, pos)
 

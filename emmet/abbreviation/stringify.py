@@ -17,18 +17,18 @@ def stringify(token: tokens.Token, state):
     if not visitor:
         raise Exception('Unknown token %s' % token.type)
 
-    return visitor[token.type](token, state)
+    return visitor(token, state)
 
 
-def Literal(token: tokens.Literal):
+def Literal(token: tokens.Literal, state):
     return token.value
 
 
-def Quote(token: tokens.Quote):
+def Quote(token: tokens.Quote, state):
     return '\'' if token.single else '"'
 
 
-def Bracket(token: tokens.Bracket):
+def Bracket(token: tokens.Bracket, state):
     if token.context == 'attribute':
         return '[' if token.open else ']'
     if token.context == 'expression':
@@ -36,7 +36,7 @@ def Bracket(token: tokens.Bracket):
     return '(' if token.open else '}'
 
 
-def Operator(token: tokens.Operator):
+def Operator(token: tokens.Operator, state):
     global operators
     return operators.get(token.operator)
 
@@ -57,7 +57,8 @@ def Field(token: tokens.Field, state):
 def RepeaterPlaceholder(token: tokens.RepeaterPlaceholder, state):
     # Find closest implicit repeater
     repeater = None
-    repeater_list = state.repeaters[:].reverse()
+    repeater_list = state.repeaters[:]
+    repeater_list.reverse()
 
     for r in repeater_list:
         if r.implicit:
@@ -70,9 +71,9 @@ def RepeaterPlaceholder(token: tokens.RepeaterPlaceholder, state):
 
 def RepeaterNumber(token: tokens.RepeaterNumber, state):
     value = 1
-    last_ix = len(state.repeaters)
+    last_ix = len(state.repeaters) - 1
 
-    if last_ix > 0:
+    if last_ix >= 0:
         repeater = state.repeaters[-1]
         if token.reverse:
             value = token.base + repeater.count - repeater.value
@@ -90,5 +91,5 @@ def RepeaterNumber(token: tokens.RepeaterNumber, state):
     return prefix + result
 
 
-def WhiteSpace():
+def WhiteSpace(token, state):
     return ' '

@@ -1,12 +1,7 @@
-class Token:
-    @property
-    def type(self):
-        return self.__class__.__name__
+from emmet.abbreviation.parser import parse as parser
+from emmet.abbreviation.tokenizer import tokenize
 
-class Repeater(Token): pass
-class Another(Token): pass
+def parse(abbr: str, options={}):
+    return parser(tokenize(abbr), options)
 
-a = Repeater()
-b = Another()
-print(a.type)
-print(b.type)
+print(parse('ul.nav[title="foo"]'))

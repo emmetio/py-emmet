@@ -7,10 +7,10 @@ class ConvertState:
     __slots__ = ('inserted', 'text', 'repeat_guard', 'repeaters', 'variables',
                  '_text_inserted')
 
-    def __init__(self, text: str = None, variables={}, max_repeat=1000000):
+    def __init__(self, text: str = None, variables={}, max_repeat=None):
         self.inserted = False
         self.text = text
-        self.repeat_guard = max_repeat
+        self.repeat_guard = max_repeat if max_repeat is not None else 1000000
         self.variables = variables
         self.repeaters = []
         self._text_inserted = False
@@ -24,7 +24,7 @@ class ConvertState:
         return value
 
     def get_variable(self, name: str):
-        return self.variables.get(name, name)
+        return self.variables.get(name) if self.variables else name
 
 
 class Abbreviation:
@@ -150,8 +150,9 @@ def convert_element(node: TokenElement, state: ConvertState):
 
     # In case if current node is a text-only snippet without fields, we should
     # put all children as siblings
-    if not elem.name and not elem.attributes and elem.value and not some(elem.value, is_field):
+    if not elem.name and elem.attributes is None and elem.value and not some(elem.value, is_field):
         result += elem.children
+        elem.children = []
 
     return result
 

@@ -1,4 +1,4 @@
-from .token_scanner import TokenScanner
+from .token_scanner import TokenScanner, TokenScannerException
 from ..tokenizer import tokens
 
 class TokenAttribute:
@@ -93,7 +93,7 @@ def element(scanner: TokenScanner, options: dict):
             elem.value = get_text(scanner)
         else:
             attr = short_attribute(scanner, 'id', options) or short_attribute(scanner, 'class', options) or attribute_set(scanner)
-            if attr:
+            if attr is not None:
                 if not isinstance(attr, list):
                     attr = [attr]
                 if elem.attributes is None:
@@ -272,7 +272,7 @@ def get_text(scanner: TokenScanner):
     return scanner.slice(start, end)
 
 
-def is_bracket(token: tokens.Bracket, context: str=None, is_open=False):
+def is_bracket(token: tokens.Bracket, context: str=None, is_open=None):
     return isinstance(token, tokens.Bracket) and \
         (context is None or token.context == context) and \
         (is_open is None or token.open == is_open)
@@ -282,7 +282,7 @@ def is_operator(token: tokens.Operator, op_type: str=None):
     return isinstance(token, tokens.Operator) and (not op_type or token.operator == op_type)
 
 
-def is_quote(token: tokens.Quote, is_single=False):
+def is_quote(token: tokens.Quote, is_single=None):
     return isinstance(token, tokens.Quote) and (is_single is None or token.single == is_single)
 
 
