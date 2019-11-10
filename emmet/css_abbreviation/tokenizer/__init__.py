@@ -87,7 +87,7 @@ def consume_placeholder(stream: Scanner):
         else:
             stream.pos += 1
 
-    if not stack:
+    if stack:
         stream.pos = stack.pop()
         raise stream.error('Expecting }')
 

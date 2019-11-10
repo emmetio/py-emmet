@@ -1,7 +1,7 @@
 import unittest
 import sys
 
-sys.path.append('../')
+sys.path.append('../../')
 
 from emmet.css_abbreviation import tokenize
 from emmet.scanner import ScannerException
