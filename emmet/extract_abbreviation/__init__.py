@@ -29,7 +29,7 @@ class ExtractedAbbreviation:
     __slots__ = ('abbreviation', 'location', 'start', 'end')
 
     def __init__(self, abbreviation: str, location: int, start: int, end: int):
-        self,abbreviation = abbreviation
+        self.abbreviation = abbreviation
         "Extracted abbreviation"
 
         self.location = location
@@ -40,6 +40,23 @@ class ExtractedAbbreviation:
 
         self.end = end
         "End location of extracted abbreviation"
+
+    def __eq__(self, other):
+        if isinstance(other, ExtractedAbbreviation):
+            return self.abbreviation == other.abbreviation and \
+                self.location == other.location and \
+                self.start == other.start and \
+                self.end == other.end
+
+        raise NotImplementedError
+
+    def __repr__(self):
+        return repr({
+            'abbreviation': self.abbreviation,
+            'location': self.location,
+            'start': self.start,
+            'end': self.end,
+        })
 
 class Brackets:
     SquareL = '['
@@ -90,7 +107,7 @@ def extract_abbreviation(line: str, pos: int=None, options={}):
         if is_close_brace(ch, opt.get('type')):
             stack.append(ch)
         elif is_open_brace(ch, opt.get('type')):
-            if stack.pop() != BRACE_PAIRS[ch]:
+            if not stack or stack.pop() != BRACE_PAIRS[ch]:
                 # unexpected brace
                 break
         elif Brackets.SquareR in stack or Brackets.CurlyR in stack:
@@ -117,10 +134,10 @@ def offset_past_auto_closed(line: str, pos: int, options: dict):
     editor will likely automatically close, e.g. }, ], and quotes
     """
     # closing quote is allowed only as a next character
-    if is_quote(line[pos]): pos += 1
+    if pos < len(line) and is_quote(line[pos]): pos += 1
 
     # offset pointer until non-autoclosed character is found
-    while is_close_brace(line[pos], options.get('type')):
+    while pos < len(line) and is_close_brace(line[pos], options.get('type')):
         pos += 1
 
     return pos
