@@ -1,5 +1,5 @@
 from .tokenizer import tokenize
-from .convert import convert
+from .convert import convert, Abbreviation, AbbreviationAttribute, AbbreviationNode
 from .parser import parse as parser
 from ..scanner import ScannerException
 

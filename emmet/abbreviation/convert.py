@@ -51,25 +51,20 @@ class AbbreviationNode:
 class AbbreviationAttribute:
     __slots__ = ('name', 'value', 'value_type', 'boolean', 'implied')
 
-    def __init__(self, node: TokenAttribute, state: ConvertState):
-        self.name = stringify_name(node.name, state) if node.name else None
-        self.value = None
-        self.value_type = 'expression' if node.expression else 'raw'
+    def __init__(self, name: str, value: list, value_type: str, boolean=False, implied=False):
+        self.name = name
+        self.value = value
+        self.value_type = value_type
         "Indicates type of value stored in `.value` property"
 
-        self.boolean = False
+        self.boolean = boolean
         "Attribute is boolean (e.g.name equals value)"
 
-        self.implied = False
+        self.implied = implied
         "Attribute is implied (e.g.must be outputted only if contains non-null value)"
 
-        if self.name:
-            if self.name[-1] == '.':
-                self.boolean = True
-                self.name = self.name[0:-1]
-            if self.name[0] == '!':
-                self.implied = True
-                self.name = self.name[1:]
+    def copy(self):
+        return AbbreviationAttribute(self.name, self.value, self.value_type, self.boolean, self.implied)
 
 
 def convert(abbr: TokenGroup, options={}):
@@ -169,7 +164,7 @@ def convert_group(node: TokenGroup, state: ConvertState):
 
 
 def convert_attribute(node: TokenAttribute, state: ConvertState):
-    attr = AbbreviationAttribute(node, state)
+    attr = create_attribute(node, state)
 
     if node.value:
         tokens = node.value[:]
@@ -195,6 +190,20 @@ def convert_attribute(node: TokenAttribute, state: ConvertState):
 
     return attr
 
+
+def create_attribute(node: TokenAttribute, state: ConvertState):
+    name = stringify_name(node.name, state) if node.name else None
+    value_type = 'expression' if node.expression else 'raw'
+    boolean = False
+    implied = False
+    if name:
+        if name[-1] == '.':
+            boolean = True
+            name = name[0:-1]
+        if name[0] == '!':
+            implied = True
+            name = name[1:]
+    return AbbreviationAttribute(name, None, value_type, boolean, implied)
 
 def stringify_name(tokens: list, state: ConvertState):
     "Converts given token list to string"
