@@ -24,7 +24,7 @@ def indent_format(abbr: Abbreviation, config: Config, options={}):
 
 def element(node: AbbreviationNode, index: int, items: list, state: IndentWalkState, walk_next: callable):
     out = state.out
-    options = state.option
+    options = state.options
     primary, secondary = collect_attributes(node)
 
     # Pick offset level for current node
@@ -36,11 +36,11 @@ def element(node: AbbreviationNode, index: int, items: list, state: IndentWalkSt
         out.push_newline(True)
 
     if node.name and (node.name != 'div' or not primary):
-        s = '%s%s%s' % (options.get('beforeName', '') + node.name + options.get('afterName', ''))
+        s = '%s%s%s' % (options.get('beforeName', ''), node.name, options.get('afterName', ''))
         out.push_string(s)
 
     push_primary_attributes(primary, state)
-    push_secondary_attributes(filter(should_output_attribute, secondary), state)
+    push_secondary_attributes(list(filter(should_output_attribute, secondary)), state)
 
     if node.self_closing and not node.value and not node.children:
         out.push_string('/')
@@ -106,7 +106,7 @@ def push_secondary_attributes(attrs: list, state: IndentWalkState):
             else:
                 out.push_string('=%s' % attr_quote(attr, config, True))
                 push_tokens(attr.value or caret, state)
-                out.pushString(attr_quote(attr, config))
+                out.push_string(attr_quote(attr, config))
 
             if i != len(attrs) - 1 and glue:
                 out.push_string(glue)

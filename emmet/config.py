@@ -63,8 +63,8 @@ DEFAULT_OPTIONS = {
     ],
     'output.reverseAttributes': False,
     'output.selfClosingStyle': 'html',
-    'output.field': lambda index, placeholder: placeholder,
-    'output.text': lambda text, offset, line, column: text,
+    'output.field': lambda index, placeholder, **kwargs: placeholder,
+    'output.text': lambda text, **kwargs: text,
 
     'comment.enabled': False,
     'comment.trigger': ['id', 'class'],
@@ -167,17 +167,18 @@ class Config:
 
 
 def merged_data(syntax_type: str, syntax: str, key: str, user_config: dict, global_config: dict={}):
-    type_defaults = SYNTAX_CONFIG.get(syntax_type)
-    type_override = global_config.get(syntax_type)
-    syntax_defaults = SYNTAX_CONFIG.get(syntax)
-    syntax_override = global_config.get(syntax)
+    empty = {}
+    type_defaults = SYNTAX_CONFIG.get(syntax_type, empty)
+    type_override = global_config.get(syntax_type, empty)
+    syntax_defaults = SYNTAX_CONFIG.get(syntax, empty)
+    syntax_override = global_config.get(syntax, empty)
 
     result = {}
-    result.update(DEFAULT_CONFIG.get(key, {}))
-    if type_defaults: result.update(type_defaults)
-    if syntax_defaults: result.update(syntax_defaults)
-    if type_override: result.update(type_override)
-    if syntax_override: result.update(syntax_override)
-    result.update(user_config.get(key, {}))
+    result.update(DEFAULT_CONFIG.get(key, empty))
+    if key in type_defaults: result.update(type_defaults[key])
+    if key in syntax_defaults: result.update(syntax_defaults[key])
+    if key in type_override: result.update(type_override[key])
+    if key in syntax_override: result.update(syntax_override[key])
+    result.update(user_config.get(key, empty))
 
     return result

@@ -50,7 +50,7 @@ def template(text: str):
     return tokens
 
 def consume_placeholder(scanner: TokenScanner):
-    if scanner == '[':
+    if scanner.peek() == '[':
         scanner.pos += 1
         start = scanner.pos
         name_pos = start

@@ -26,7 +26,7 @@ class OutputStream:
     def push(self, text: str):
         "Pushes plain string into output stream without newline processing"
         process_text = self.options.get('output.text')
-        self._push(process_text(text, self.offset, self.line, self.column))
+        self._push(process_text(text, offset=self.offset, line=self.line, column=self.column))
 
     def push_string(self, value: str):
         "Pushes given string with possible newline formatting into output"
@@ -59,7 +59,7 @@ class OutputStream:
     def push_field(self, index: int, placeholder: str=''):
         field = self.options.get('output.field')
         # NB: use `_push` instead of `push` to skip text processing
-        self._push(field(index, placeholder, self.offset, self.line, self.column))
+        self._push(field(index, placeholder, offset=self.offset, line=self.line, column=self.column))
 
 
 def tag_name(name: str, config: Config):

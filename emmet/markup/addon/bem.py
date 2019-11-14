@@ -43,7 +43,7 @@ def expand_class_names(node: AbbreviationNode, lookup: dict):
             class_names.append(cl)
 
     if class_names:
-        data.class_names = list(set(class_names))
+        data.class_names = unique(class_names)
         data.block = find_block_name(data.class_names)
         update_class(node, ' '.join(data.class_names))
 
@@ -80,7 +80,7 @@ def expand_short_notation(node: AbbreviationNode, ancestors: list, config: Confi
             # add it as-is into output
             class_names.append(original_class)
 
-    arr_class_names = list(set(class_names))
+    arr_class_names = unique(class_names)
     if arr_class_names:
         update_class(node, ' '.join(arr_class_names))
 
@@ -100,12 +100,10 @@ def get_bem_data(node: AbbreviationNode, lookup: dict):
     return lookup[node]
 
 
-def get_bem_data_from_context(context: dict, lookup: dict):
-    if context not in lookup:
-        attrs = context.get('attributes', {})
-        lookup[context] = parse_bem(attrs.get('class', ''))
-
-    return lookup[context]
+def get_bem_data_from_context(context: dict):
+    # XXX dict is unhashable, can’t use lookup. Just re-parse on each request
+    attrs = context.get('attributes', {})
+    return parse_bem(attrs.get('class', ''))
 
 
 def parse_bem(class_value=''):
@@ -130,7 +128,7 @@ def get_block_name(ancestors: list, depth=0, context: dict=None, lookup={}):
         parent_ix -= 1
 
     if context is not None:
-        data = get_bem_data_from_context(context, lookup)
+        data = get_bem_data_from_context(context)
         if data.block:
             return data.block
 
@@ -143,7 +141,7 @@ def find_block_name(class_names: list):
 
 def find(class_names: list, fn: callable):
     for cl in class_names:
-        if re_element.match(cl) or re_modifier.test(cl):
+        if re_element.match(cl) or re_modifier.match(cl):
             break
 
         if fn(cl): return cl
@@ -158,3 +156,7 @@ def update_class(node: AbbreviationNode, value: str):
 
 def stringify_value(value: list):
     return ''.join([t if isinstance(t, str) else t.name for t in value])
+
+def unique(items: list):
+    seen = set()
+    return [x for x in items if x not in seen and not seen.add(x)]

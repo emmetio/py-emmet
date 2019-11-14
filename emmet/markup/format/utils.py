@@ -4,7 +4,7 @@ from ...abbreviation.tokenizer.tokens import Field
 from ...config import Config
 from ...output_stream import OutputStream, is_inline
 
-caret = Field('', 0)
+caret = [Field('', 0)]
 "Default caret token"
 
 def is_snippet(node: AbbreviationNode):
