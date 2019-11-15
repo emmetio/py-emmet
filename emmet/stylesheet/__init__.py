@@ -152,7 +152,7 @@ def resolve_as_snippet(node: CSSProperty, snippet: CSSSnippetRaw):
         if input_value and input_value.value:
             output_value.append(input_value.value.pop(0))
         else:
-            output_value.append(tokens.Field(m[2][1:] if m[2] else '', int(m[1])))
+            output_value.append(tokens.Field(m.group(2)[1:] if m.group(2) else '', int(m.group(1))))
 
     tail = snippet.value[offset:]
     if tail:

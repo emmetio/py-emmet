@@ -104,7 +104,7 @@ def get_single_numeric(node: CSSProperty):
 
 def to_camel_case(text: str):
     "Converts kebab-case string to camelCase"
-    return re.sub(r'\-(\w)', lambda m: m[1].upper(), text)
+    return re.sub(r'\-(\w)', lambda m: m.group(1).upper(), text)
 
 def get_quote(config: Config):
     return '"' if config.options.get('stylesheet.jsonDoubleQuotes') else '\''
