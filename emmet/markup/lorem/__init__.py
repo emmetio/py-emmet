@@ -25,9 +25,9 @@ def lorem(node: AbbreviationNode, ancestors: list, config: Config):
 
     m = re_lorem.match(node.name)
     if m:
-        db = vocabularies.get(m[1]) or vocabularies.get('latin')
-        min_word_count = max(1, int(m[2])) if m[2] else 30
-        max_word_count = max(min_word_count, int(m[3][1:])) if m[3] else min_word_count
+        db = vocabularies.get(m.group(1)) or vocabularies.get('latin')
+        min_word_count = max(1, int(m.group(2))) if m.group(2) else 30
+        max_word_count = max(min_word_count, int(m.group(3)[1:])) if m.group(3) else min_word_count
         word_count = randint(min_word_count, max_word_count)
         repeat = node.repeat or find_repeater(ancestors)
 

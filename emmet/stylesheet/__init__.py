@@ -1,7 +1,7 @@
 import re
 from ..css_abbreviation import parse as abbreviation, tokens, CSSValue, CSSProperty, FunctionCall
 from ..config import Config
-from ..list_utils import some
+from ..list_utils import some, get_item
 from .snippets import create_snippet, nest, CSSSnippetProperty, CSSSnippetRaw
 from .score import calculate_score
 from .color import color
@@ -65,9 +65,7 @@ def resolve_node(node: CSSProperty, snippets: list, config: Config):
 
 
 def resolve_gradient(node: CSSProperty, config: Config):
-    """
-    Resolves CSS gradient shortcut from given property, if possible
-    """
+    "Resolves CSS gradient shortcut from given property, if possible"
     global gradient_name
     gradient_fn = None
     css_val = node.value[0] if len(node.value) == 1 else None
@@ -78,12 +76,12 @@ def resolve_gradient(node: CSSProperty, config: Config):
             gradient_fn = v
 
     if gradient_fn or node.name == gradient_name:
-        gradient_value = gradient_fn.arguments if gradient_fn else [CSSValue(tokens.Field(0, ''))]
+        gradient_value = gradient_fn.arguments if gradient_fn else [CSSValue([tokens.Field('', 0)])]
         gradient_fn = FunctionCall('linear-gradient', gradient_value)
 
         if not config.context:
             node.name = 'background-image'
-        node.value = [CSSValue(gradient_fn)]
+        node.value = [CSSValue([gradient_fn])]
 
         return True
 
@@ -101,7 +99,7 @@ def resolve_as_property(node: CSSProperty, snippet: CSSSnippetProperty, config: 
         inline_value = get_unmatched_part(abbr, snippet.key)
         kw = resolve_keyword(inline_value, config, snippet) if inline_value else None
         if kw:
-            node.value.append(CSSValue(kw))
+            node.value.append(CSSValue([kw]))
         elif snippet.value:
             default_value = snippet.value[0]
 
@@ -144,7 +142,7 @@ def resolve_as_snippet(node: CSSProperty, snippet: CSSSnippetRaw):
     # 1. Replace field placeholders with actual field tokens.
     # 2. If input values given, put them instead of fields
     offset = 0
-    input_value = node.value[0]
+    input_value = get_item(node.value, 0)
     output_value = []
 
     for m in re.finditer(r'\$\{(\d+)(:[^}]+)?\}', snippet.value):
@@ -154,7 +152,7 @@ def resolve_as_snippet(node: CSSProperty, snippet: CSSSnippetRaw):
         if input_value and input_value.value:
             output_value.append(input_value.value.pop(0))
         else:
-            output_value.append(tokens.Field(int(m[1]), m[2][1:] if m[2] else ''))
+            output_value.append(tokens.Field(m[2][1:] if m[2] else '', int(m[1])))
 
     tail = snippet.value[offset:]
     if tail:
@@ -201,13 +199,12 @@ def get_unmatched_part(abbr: str, text: str):
     """
     last_pos = 0
     for i, ch in enumerate(abbr):
-        last_pos = text.index(ch, last_pos)
+        last_pos = text.find(ch, last_pos)
         if last_pos == -1:
             return abbr[i:]
         last_pos += 1
 
     return ''
-
 
 
 def resolve_keyword(kw: str, config: Config, snippet: CSSSnippetProperty=None, min_score=0):

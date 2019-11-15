@@ -40,13 +40,13 @@ def create_snippet(key: str, value: str):
     m = re_property.match(value)
     if m:
         keywords = {}
-        parsed = [parse_value(v) for v in m[2].split('|')] if m[2] else []
+        parsed = [parse_value(v) for v in m.group(2).split('|')] if m.group(2) else []
 
         for item in parsed:
             for css_val in item:
                 collect_keywords(css_val, keywords)
 
-        return CSSSnippetProperty(key, m[1], parsed, keywords)
+        return CSSSnippetProperty(key, m.group(1), parsed, keywords)
 
     return CSSSnippetRaw(key, value)
 

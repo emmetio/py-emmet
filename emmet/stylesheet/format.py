@@ -52,7 +52,7 @@ def css_property_value(node: CSSProperty, out: OutputStream, config: Config):
     if num and (not num.unit or num.unit == 'px'):
         # For CSS-in-JS, if property contains single numeric value, output it
         # as JS number
-        out.push(str(num.value))
+        out.push(frac(num.value))
     else:
         quote = get_quote(config)
         if is_json: out.push(quote)

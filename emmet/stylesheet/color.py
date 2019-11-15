@@ -22,16 +22,16 @@ def as_hex(token: ColorValue, short=False):
     return '#%s%s%s' % (fn(token.r), fn(token.g), fn(token.b))
 
 def as_rgb(token: ColorValue):
-    values = [token.r, token.g, token.b]
+    values = [str(token.r), str(token.g), str(token.b)]
     prefix = 'rgb'
     if token.a != 1:
         prefix = 'rgba'
         values.append(frac(token.a, 8))
 
-    return prefix + ', '.join(values)
+    return '%s(%s)' % (prefix, ', '.join(values))
 
 def frac(num: int, digits=4):
-    str_num = ('%.' + digits + 'f') % num
+    str_num = ('%.' + str(digits) + 'f') % num
     return re.sub(r'\.?0+$', '', str_num)
 
 def is_short_hex(num: int):

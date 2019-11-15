@@ -9,7 +9,7 @@ from emmet.stylesheet.score import calculate_score as score
 def field(index: int, placeholder: str, **kwargs):
     if placeholder:
         return '${%d:%s}' % (index, placeholder)
-    return '${%s}' % placeholder
+    return '${%d}' % index
 
 default_config = Config({
     'type': 'stylesheet',
@@ -31,7 +31,7 @@ def expand(abbr: str, config=default_config):
 def pick(abbr: str, items: list):
     items = map(lambda item: { 'item': item, 'score': score(abbr, item) }, items)
     items = list(filter(lambda item: item['score'] > 0, items))
-    items.sort(key=lambda item: item['score'])
+    items.sort(key=lambda item: item['score'], reverse=True)
 
     if items:
         return items[0]['item']
@@ -52,8 +52,128 @@ class TestStylesheetScoring(unittest.TestCase):
         # acronym bonus
         self.assertTrue(score('ab', 'a-b') > score('ab', 'acb'))
 
-    # def test_pick_padding_or_position(self):
-    #     items = ['p', 'pb', 'pl', 'pos', 'pa', 'oa', 'soa', 'pr', 'pt']
+    def test_pick_padding_or_position(self):
+        items = ['p', 'pb', 'pl', 'pos', 'pa', 'oa', 'soa', 'pr', 'pt']
 
-    #     self.assertEqual(pick('p', items), 'p')
-    #     self.assertEqual(pick('poa', items), 'pos')
+        self.assertEqual(pick('p', items), 'p')
+        self.assertEqual(pick('poa', items), 'pos')
+
+
+class TestStylesheetAbbreviations(unittest.TestCase):
+    def test_keyword(self):
+        self.assertEqual(expand('bd1-s'), 'border: 1px solid;')
+        self.assertEqual(expand('dib'), 'display: inline-block;')
+        self.assertEqual(expand('bxsz'), 'box-sizing: ${1:border-box};')
+        self.assertEqual(expand('bxz'), 'box-sizing: ${1:border-box};')
+        self.assertEqual(expand('bxzc'), 'box-sizing: content-box;')
+        self.assertEqual(expand('fl'), 'float: ${1:left};')
+        self.assertEqual(expand('fll'), 'float: left;')
+
+        self.assertEqual(expand('pos'), 'position: ${1:relative};')
+        self.assertEqual(expand('poa'), 'position: absolute;')
+        self.assertEqual(expand('por'), 'position: relative;')
+        self.assertEqual(expand('pof'), 'position: fixed;')
+        self.assertEqual(expand('pos-a'), 'position: absolute;')
+
+        self.assertEqual(expand('m'), 'margin: ${0};')
+        self.assertEqual(expand('m0'), 'margin: 0;')
+
+        # use `auto` as global keyword
+        self.assertEqual(expand('m0-a'), 'margin: 0 auto;')
+        self.assertEqual(expand('m-a'), 'margin: auto;')
+
+        self.assertEqual(expand('bg'), 'background: ${1:#000};')
+
+        self.assertEqual(expand('bd'), 'border: ${1:1px} ${2:solid} ${3:#000};')
+        self.assertEqual(expand('bd0-s#fc0'), 'border: 0 solid #fc0;')
+        self.assertEqual(expand('bd0-dd#fc0'), 'border: 0 dot-dash #fc0;')
+        self.assertEqual(expand('bd0-h#fc0'), 'border: 0 hidden #fc0;')
+
+        self.assertEqual(expand('trf-trs'), 'transform: translate(${1:x}, ${2:y});')
+
+    def test_numeric(self):
+        self.assertEqual(expand('p0'), 'padding: 0;', 'No unit for 0')
+        self.assertEqual(expand('p10'), 'padding: 10px;', '`px` unit for integers')
+        self.assertEqual(expand('p.4'), 'padding: 0.4em;', '`em` for floats')
+        self.assertEqual(expand('p10p'), 'padding: 10%;', 'unit alias')
+        self.assertEqual(expand('z10'), 'z-index: 10;', 'Unitless property')
+        self.assertEqual(expand('p10r'), 'padding: 10rem;', 'unit alias')
+        self.assertEqual(expand('mten'), 'margin: 10px;', 'Ignore terminating `;` in snippet')
+
+        # https://github.com/microsoft/vscode/issues/59951
+        self.assertEqual(expand('fz'), 'font-size: ${0};')
+        self.assertEqual(expand('fz12'), 'font-size: 12px;')
+        self.assertEqual(expand('fsz'), 'font-size: ${0};')
+        self.assertEqual(expand('fsz12'), 'font-size: 12px;')
+        self.assertEqual(expand('fs'), 'font-style: ${1:italic};')
+
+        # https://github.com/emmetio/emmet/issues/558
+        self.assertEqual(expand('us'), 'user-select: none;')
+
+    def test_numeric_with_format(self):
+        config = Config({
+            'options': {
+                'stylesheet.intUnit': 'pt',
+                'stylesheet.floatUnit': 'vh',
+                'stylesheet.unitAliases': {
+                    'e': 'em',
+                    'p': '%',
+                    'x': 'ex',
+                    'r': ' / @rem'
+                }
+            }
+        })
+        self.assertEqual(expand('p0', config), 'padding: 0;', 'No unit for 0')
+        self.assertEqual(expand('p10', config), 'padding: 10pt;', '`pt` unit for integers')
+        self.assertEqual(expand('p.4', config), 'padding: 0.4vh;', '`vh` for floats')
+        self.assertEqual(expand('p10p', config), 'padding: 10%;', 'unit alias')
+        self.assertEqual(expand('z10', config), 'z-index: 10;', 'Unitless property')
+        self.assertEqual(expand('p10r', config), 'padding: 10 / @rem;', 'unit alias')
+
+    def test_important(self):
+        self.assertEqual(expand('!'), '!important')
+        self.assertEqual(expand('p!'), 'padding: ${0} !important;')
+        self.assertEqual(expand('p0!'), 'padding: 0 !important;')
+
+    def test_snippets(self):
+        self.assertEqual(expand('@k'), '@keyframes ${1:identifier} {\n\t${2}\n}')
+        # Insert value into snippet fields
+        self.assertEqual(expand('@k-name'), '@keyframes name {\n\t${2}\n}')
+        self.assertEqual(expand('@k-name10'), '@keyframes name {\n\t10\n}')
+
+    def test_multiple_properties(self):
+        self.assertEqual(expand('p10+m10-20'), 'padding: 10px;\nmargin: 10px 20px;')
+        self.assertEqual(expand('p+bd'), 'padding: ${0};\nborder: ${1:1px} ${2:solid} ${3:#000};')
+
+    def test_functions(self):
+        self.assertEqual(expand('trf-s(2)'), 'transform: scale(2, ${2:y});')
+        self.assertEqual(expand('trf-s(2, 3)'), 'transform: scale(2, 3);')
+
+    def test_case_insensitive_match(self):
+        self.assertEqual(expand('trf:rx'), 'transform: rotateX(${1:angle});')
+
+    def test_gradient_resolver(self):
+        self.assertEqual(expand('lg'), 'background-image: linear-gradient(${0});')
+        self.assertEqual(expand('lg(to right, #0, #f00.5)'), 'background-image: linear-gradient(to right, #000, rgba(255, 0, 0, 0.5));')
+
+    def test_min_score(self):
+        self.assertEqual(expand('auto', Config({ 'options': { 'stylesheet.fuzzySearchMinScore': 0 } })), 'align-self: unset;')
+        self.assertEqual(expand('auto', Config({ 'options': { 'stylesheet.fuzzySearchMinScore': 0.3 } })), 'auto: ;')
+
+    def test_css_in_js(self):
+        config = Config({
+            'options': {
+                'stylesheet.json': True,
+                'stylesheet.between': ': '
+            }
+        })
+
+        self.assertEqual(expand('p10+mt10-20', config), 'padding: 10,\nmarginTop: \'10px 20px\',')
+
+    def test_resolve_context_value(self):
+        config = Config({
+            'context': { 'name': 'align-content' }
+        })
+
+        self.assertEqual(expand('s', config), 'start')
+        self.assertEqual(expand('a', config), 'auto')
