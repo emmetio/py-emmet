@@ -1,5 +1,5 @@
 from ..config import Config
-from ..abbreviation import parse as abbreviation, Abbreviation, AbbreviationNode
+from ..abbreviation import parse as abbreviation, Abbreviation, AbbreviationNode, AbbreviationAttribute
 from .attributes import merge_attributes as attributes
 from .snippets import resolve_snippets as snippets
 from .implicit_tag import implicit_tag

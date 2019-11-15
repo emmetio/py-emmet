@@ -1,5 +1,5 @@
-from .tokenizer import tokenize
-from .parser import parser
+from .tokenizer import tokenize, tokens
+from .parser import parser, CSSProperty, CSSValue, FunctionCall
 from ..scanner import ScannerException
 
 def parse(abbr: str, options={}):

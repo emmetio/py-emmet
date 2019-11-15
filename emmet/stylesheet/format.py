@@ -5,7 +5,7 @@ from ..output_stream import OutputStream
 from ..config import Config
 from .color import color, frac
 
-def css(abbr: list, config: Config):
+def stringify(abbr: list, config: Config):
     out = OutputStream(config.options)
     fmt = config.options.get('output.format')
 
