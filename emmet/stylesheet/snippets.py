@@ -1,4 +1,5 @@
 import re
+import collections
 from ..css_abbreviation import parse, tokens, CSSValue, FunctionCall
 
 
@@ -39,7 +40,7 @@ def create_snippet(key: str, value: str):
     # In latter case, we have to parse snippet as CSS abbreviation
     m = re_property.match(value)
     if m:
-        keywords = {}
+        keywords = collections.OrderedDict()
         parsed = [parse_value(v) for v in m.group(2).split('|')] if m.group(2) else []
 
         for item in parsed:

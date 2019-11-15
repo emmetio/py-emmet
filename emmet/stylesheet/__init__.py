@@ -38,7 +38,7 @@ def resolve_node(node: CSSProperty, snippets: list, config: Config):
     keyword aliases from node value
     """
     if not resolve_gradient(node, config):
-        score = config.options.get('stylesheet.fuzzySearchMinScore', 0.3)
+        score = config.options.get('stylesheet.fuzzySearchMinScore', 0)
         if config.context:
             # Resolve as value of given CSS property
             prop_name = config.context.get('name', '')
