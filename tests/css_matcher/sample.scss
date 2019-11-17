@@ -1,0 +1,23 @@
+@media screen and (min-width: 900px) {
+    $width: 20px;
+    foo {
+        .bar[title="Enable"] {
+            padding: 10px;
+            margin: 20px;
+            position: absolute;
+        }
+    }
+
+    div {
+        font-weight: bold;
+        font-size: 12px;
+    }
+
+    .empty{}
+}
+
+blockquote.incut {
+    margin: 20px 10px;
+}
+
+$a: b;
