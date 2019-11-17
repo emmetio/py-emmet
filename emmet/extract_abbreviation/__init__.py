@@ -3,28 +3,6 @@ from .reader import BackwardScanner
 from .is_html import is_html as is_at_html_tag, is_quote
 from ..scanner_utils import is_alpha, is_number
 
-"""
-Parser options:
-
-lookAhead: bool
-Allow parser to look ahead of `pos` index for searching of missing
-abbreviation parts. Most editors automatically inserts closing braces for
-`[`, `{` and `(`, which will most likely be right after current caret position.
-So in order to properly expand abbreviation, user must explicitly move
-caret right after auto-inserted braces. With this option enabled, parser
-will search for closing braces right after `pos`. Default is `true`
-
-type: 'markup' | 'stylesheet'
-Type of context syntax of expanded abbreviation.
-In 'stylesheet' syntax, brackets `[]` and `{}` are not supported thus
-not extracted.
-
-prefix: str
-A string that should precede abbreviation in order to make it successfully
-extracted. If given, the abbreviation will be extracted from the nearest
-`prefix` occurrence.
-"""
-
 class ExtractedAbbreviation:
     __slots__ = ('abbreviation', 'location', 'start', 'end')
 
@@ -74,8 +52,32 @@ BRACE_PAIRS = dict([
 ])
 
 def extract_abbreviation(line: str, pos: int=None, options={}):
-    global BRACE_PAIRS
-    if pos is None: pos = len(line)
+    """
+    Extracts abbreviation from given line of source code.
+    Options:
+
+    Parser options:
+
+    lookAhead: bool
+    Allow parser to look ahead of `pos` index for searching of missing
+    abbreviation parts. Most editors automatically inserts closing braces for
+    `[`, `{` and `(`, which will most likely be right after current caret position.
+    So in order to properly expand abbreviation, user must explicitly move
+    caret right after auto-inserted braces. With this option enabled, parser
+    will search for closing braces right after `pos`. Default is `true`
+
+    type: 'markup' | 'stylesheet'
+    Type of context syntax of expanded abbreviation.
+    In 'stylesheet' syntax, brackets `[]` and `{}` are not supported thus
+    not extracted.
+
+    prefix: str
+    A string that should precede abbreviation in order to make it successfully
+    extracted. If given, the abbreviation will be extracted from the nearest
+    `prefix` occurrence.
+    """
+    if pos is None:
+        pos = len(line)
     opt = create_options(options)
     # make sure `pos` is within line range
     pos = min(len(line), max(0, pos))
@@ -187,7 +189,8 @@ def consume_list(scanner: BackwardScanner, arr: list):
     i = len(arr) - 1
 
     while i >= 0 and not scanner.sol():
-        if not scanner.consume(arr[i]): break
+        if not scanner.consume(arr[i]):
+            break
         consumed = i == 0
         i -= 1
 
@@ -198,24 +201,24 @@ def consume_list(scanner: BackwardScanner, arr: list):
 
 
 def is_abbreviation(ch: str):
-    global SPECIAL_CHARS
     return is_alpha(ch) or is_number(ch) or ch in SPECIAL_CHARS
 
 
 def is_open_brace(ch: str, syntax: str):
-    return ch == Brackets.RoundL or (syntax == 'markup' and (ch == Brackets.SquareL or ch == Brackets.CurlyL))
+    return ch == Brackets.RoundL or (syntax == 'markup' and ch in (Brackets.SquareL, Brackets.CurlyL))
 
 
 def is_close_brace(ch: str, syntax: str):
-    return ch == Brackets.RoundR or (syntax == 'markup' and (ch == Brackets.SquareR or ch == Brackets.CurlyR))
+    return ch == Brackets.RoundR or (syntax == 'markup' and ch in (Brackets.SquareR, Brackets.CurlyR))
 
 
-def create_options(opt={}):
+def create_options(opt=None):
     options = {
         'type': 'markup',
         'lookAhead': True,
         'prefix': '',
     }
 
-    options.update(opt)
+    if opt:
+        options.update(opt)
     return options
