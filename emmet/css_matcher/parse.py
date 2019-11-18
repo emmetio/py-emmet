@@ -40,7 +40,7 @@ def split_value(value: str, offset=0):
 
 
 def is_operator(ch: str):
-    global operators
+    "Check if given character is an operator"
     return ch in operators
 
 

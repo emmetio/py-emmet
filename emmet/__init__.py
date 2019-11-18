@@ -11,7 +11,7 @@ from .extract_abbreviation import extract_abbreviation as extract
 from .scanner import ScannerException
 
 
-def expand(abbr: str, config: dict={}):
+def expand(abbr: str, config: dict={}) -> str:
     "Expands given abbreviation into code snippet"
     resolved_config = Config(config)
     if resolved_config.type == 'stylesheet':
@@ -20,7 +20,7 @@ def expand(abbr: str, config: dict={}):
     return expand_markup(abbr, resolved_config)
 
 
-def expand_markup(abbr: str, config: Config):
+def expand_markup(abbr: str, config: Config) -> str:
     """
     Expands given *markup* abbreviation (e.g. regular Emmet abbreviation that
     produces structured output like HTML) and outputs it according to options

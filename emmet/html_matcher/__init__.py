@@ -61,7 +61,7 @@ class BalancedTag:
         return json
 
 
-def match(source: str, pos: int, opt: dict=None):
+def match(source: str, pos: int, opt: dict=None) -> MatchedTag:
     "Finds matched tag for given `pos` location in XML/HTML `source`"
     # Since we expect large input document, we’ll use pooling technique
     # for storing tag data to reduce memory pressure and improve performance
@@ -98,7 +98,7 @@ def match(source: str, pos: int, opt: dict=None):
     return result[0]
 
 
-def balanced_outward(source: str, pos: int, opt: dict=None):
+def balanced_outward(source: str, pos: int, opt: dict=None) -> list:
     """
     Returns balanced tag model: a list of all XML/HTML tags that could possibly match
     given location when moving in outward direction
@@ -130,7 +130,7 @@ def balanced_outward(source: str, pos: int, opt: dict=None):
     return result
 
 
-def balanced_inward(source: str, pos: int, opt: dict=None):
+def balanced_inward(source: str, pos: int, opt: dict=None) -> list:
     """
     Returns balanced tag model: a list of all XML/HTML tags that could possibly match
     given location when moving in inward direction

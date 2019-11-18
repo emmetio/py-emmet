@@ -34,15 +34,17 @@ default_empty = ['img', 'meta', 'link', 'br', 'base', 'hr', 'area', 'wbr', 'col'
 class ScannerOptions:
     __slots__ = ('xml', 'special', 'empty')
 
-    def __init__(self, xml=False, special=default_special, empty=default_empty):
-        self.xml = xml
+    def __init__(self, options: dict=None):
+        if options is None:
+            options = {}
+        self.xml = options.get('xml', False)
         """
         Parses given source as XML document. It alters how should-be-empty
         elements are treated: for example, in XML mode parser will try to locate
         closing pair for `<br>` tag
         """
 
-        self.special = special
+        self.special = options.get('special', default_special)
         """
         List of tags that should have special parsing rules, e.g. should not parse
         inner content and skip to closing tag. Key is a tag name that should be
@@ -51,7 +53,7 @@ class ScannerOptions:
         make element special
         """
 
-        self.empty = empty
+        self.empty = options.get('empty', default_empty)
         """
         List of elements that should be treated as empty (e.g. without closing tag)
         in non-XML syntax

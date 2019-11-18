@@ -51,7 +51,7 @@ BRACE_PAIRS = dict([
     (Brackets.CurlyL, Brackets.CurlyR),
 ])
 
-def extract_abbreviation(line: str, pos: int=None, options={}):
+def extract_abbreviation(line: str, pos: int=None, options={}) -> ExtractedAbbreviation:
     """
     Extracts abbreviation from given line of source code.
     Options:

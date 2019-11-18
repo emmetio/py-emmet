@@ -31,7 +31,7 @@ class InwardRange:
         self.first_child = None
 
 
-def match(source: str, pos: int):
+def match(source: str, pos: int) -> MatchResult:
     pool = []
     stack = []
     result = [None]
@@ -68,7 +68,7 @@ def match(source: str, pos: int):
     return result[0]
 
 
-def balanced_outward(source: str, pos: int):
+def balanced_outward(source: str, pos: int) -> list:
     """
     Returns balanced CSS model: a list of all ranges that could possibly match
     given location when moving in outward direction
@@ -114,7 +114,7 @@ def balanced_outward(source: str, pos: int):
     return result
 
 
-def balanced_inward(source: str, pos: int):
+def balanced_inward(source: str, pos: int) -> list:
     """
     Returns balanced CSS selectors: a list of all ranges that could possibly match
     given location when moving in inward direction

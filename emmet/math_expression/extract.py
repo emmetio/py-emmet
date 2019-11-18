@@ -15,7 +15,7 @@ class BackwardScanner:
         return self.text[self.pos] if self.pos < len(self.text) else ''
 
 
-def extract(text: str, pos=None, options: dict=None):
+def extract(text: str, pos=None, options: dict=None) -> tuple:
     """
     Extracts math expression from given text at specified position.
     Expression is extracted in backward direction.

@@ -57,7 +57,7 @@ class ParseState:
         self.value_delimiter = -1
 
 
-def get_css_section(code: str, pos: int, properties=False):
+def get_css_section(code: str, pos: int, properties=False) -> CSSSection:
     """
     Returns context CSS section for given location in source code
     :param properties Parse inner properties
@@ -90,14 +90,14 @@ def get_css_section(code: str, pos: int, properties=False):
     return section
 
 
-def select_item_css(code: str, pos: int, is_prev=False):
+def select_item_css(code: str, pos: int, is_prev=False) -> SelectItemModel:
     "Returns list of ranges for Select Next/Previous CSS Item  action"
     if is_prev:
         return select_previous_item(code, pos)
     return select_next_item(code, pos)
 
 
-def select_next_item(code: str, pos: int):
+def select_next_item(code: str, pos: int) -> SelectItemModel:
     "Returns regions for selecting next item in CSS"
     result = []
     result.append(None)
@@ -141,7 +141,7 @@ def select_next_item(code: str, pos: int):
     return result[0]
 
 
-def select_previous_item(code: str, pos: int):
+def select_previous_item(code: str, pos: int) -> SelectItemModel:
     "Returns regions for selecting previous item in CSS"
     state = ParseState()
 
@@ -193,7 +193,7 @@ class ParsePropertiesState:
         self.nested = 0
         self.before= before
 
-def parse_properties(code: str, parse_from=0, parse_to=None):
+def parse_properties(code: str, parse_from=0, parse_to=None) -> list:
     """
     Parses properties in `from:to` fragment of `code`. Note that `from:to` must
     point to CSS section content, e.g. *inside* `{` and `}` (or top-level code context),
@@ -238,7 +238,7 @@ def parse_properties(code: str, parse_from=0, parse_to=None):
     return result
 
 
-def alloc_range(pool: list, start: int, end: int, delimiter: int):
+def alloc_range(pool: list, start: int, end: int, delimiter: int) -> list:
     "Allocates new token range from pool"
     if pool:
         rng = pool.pop()

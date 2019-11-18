@@ -4,14 +4,15 @@ from .utils import push_range, SelectItemModel, token_list
 class ContextTag:
     __slots__ = ('name', 'type', 'start', 'end', 'attributes')
 
-    def __init__(self, name: str, elem_type: ElementType, start: int, end: int, attributes: list=None):
+    def __init__(self, name: str, elem_type: ElementType, start: int, end: int, attrs: list=None):
         self.name = name
         self.type = elem_type
         self.start = start
         self.end = end
-        self.attributes = attributes
+        self.attributes = attrs
 
     def to_json(self):
+        "Returns JSON representation of current object"
         result = {
             'name': self.name,
             'type': self.type,
@@ -25,7 +26,7 @@ class ContextTag:
         return result
 
 
-def get_open_tag(code: str, pos: int):
+def get_open_tag(code: str, pos: int) -> ContextTag:
     """
     Check if there’s open or self-closing tag under given `pos` location in source code.
     If found, returns its name, range in source and parsed attributes
@@ -50,16 +51,16 @@ def get_open_tag(code: str, pos: int):
     return tag[0]
 
 
-def select_item_html(code: str, pos: int, is_prev=False):
+def select_item_html(code: str, pos: int, is_prev=False, options: dict=None) -> SelectItemModel:
     "Returns list of ranges for Select Next/Previous Item action"
     if is_prev:
-        return select_previous_item(code, pos)
-    return select_next_item(code, pos)
+        return select_previous_item(code, pos, options)
+    return select_next_item(code, pos, options)
 
 
-def select_next_item(code: str, pos: int):
+def select_next_item(code: str, pos: int, options: dict=None) -> SelectItemModel:
     "Returns list of ranges for Select Next Item action"
-    opt = ScannerOptions()
+    opt = ScannerOptions(options)
     result = []
     result.append(None)
 
@@ -73,9 +74,9 @@ def select_next_item(code: str, pos: int):
     return result[0]
 
 
-def select_previous_item(code: str, pos: int):
+def select_previous_item(code: str, pos: int, options: dict=None) -> SelectItemModel:
     "Returns list of ranges for Select Previous Item action"
-    opt = ScannerOptions()
+    opt = ScannerOptions(options)
     last = {
         'name': '',
         'type': None,
@@ -101,7 +102,7 @@ def select_previous_item(code: str, pos: int):
         return get_tag_selection_model(code, last['name'], last['start'], last['end'])
 
 
-def get_tag_selection_model(code: str, name: str, start: int, end: int):
+def get_tag_selection_model(code: str, name: str, start: int, end: int) -> SelectItemModel:
     """
     Parses open or self-closing tag in `start:end` range of `code` and returns its
     model for selecting items
@@ -134,7 +135,7 @@ def get_tag_selection_model(code: str, name: str, start: int, end: int):
     return SelectItemModel(start, end, ranges)
 
 
-def value_range(attr: AttributeToken):
+def value_range(attr: AttributeToken) -> tuple:
     "Returns value range of given attribute. Value range is unquoted."
     value = attr.value
     ch = value[0]
