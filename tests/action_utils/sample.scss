@@ -1,0 +1,33 @@
+ul {
+    flex: 1 1;
+    display: flex;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    position: relative;
+
+    > li {
+        border-top: 2px solid transparent;
+        color: $ok-gray;
+        cursor: pointer;
+
+        &.selected {
+            border-color: $c-main;
+            color: $c-main;
+            background: $ok-chalk;
+        }
+    }
+}
+
+slot[name="controls"]:empty {
+    display: none;
+}
+
+div {
+    padding: 10px;
+    .inner {
+        margin: 10px;
+    }
+    color: #000;
+}
