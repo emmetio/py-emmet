@@ -1,4 +1,4 @@
-{
+vocabulary = {
 	"common": ["lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipisicing", "elit"],
 	"words": ["exercitationem", "perferendis", "perspiciatis", "laborum", "eveniet",
 		"sunt", "iure", "nam", "nobis", "eum", "cum", "officiis", "excepturi",

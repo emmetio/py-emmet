@@ -1,30 +1,4 @@
-import os.path
-import json
-
-def read_json(file: str):
-    dirname = os.path.dirname(os.path.abspath(__file__))
-    with open(os.path.join(dirname, 'snippets', file), 'r', encoding='utf8') as f:
-        return json.loads(f.read(None))
-
-
-def parse_snippets(snippets: dict):
-    """
-    Parses raw snippets definitions with possibly multiple keys into a plan
-    snippet map
-    """
-    result = {}
-    for k in snippets.keys():
-        for name in k.split('|'):
-            result[name] = snippets[k]
-
-    return result
-
-
-markup_snippets = read_json('html.json')
-xsl_snippets = read_json('xsl.json')
-stylesheet_snippets = read_json('css.json')
-variables = read_json('variables.json')
-
+from .snippets import markup_snippets, stylesheet_snippets, xsl_snippets, variables
 
 DEFAULT_SYNTAXES = { 'markup': 'html', 'stylesheet': 'css' }
 "Default syntaxes for abbreviation types"
@@ -100,7 +74,7 @@ DEFAULT_CONFIG = {
 
 SYNTAX_CONFIG = {
     'markup': {
-        'snippets': parse_snippets(markup_snippets),
+        'snippets': markup_snippets,
     },
     'xhtml': {
         'options': {
@@ -113,7 +87,7 @@ SYNTAX_CONFIG = {
         }
     },
     'xsl': {
-        'snippets': parse_snippets(xsl_snippets),
+        'snippets': xsl_snippets,
         'options': {
             'output.selfClosingStyle': 'xml'
         }
@@ -125,7 +99,7 @@ SYNTAX_CONFIG = {
     },
 
     'stylesheet': {
-        'snippets': parse_snippets(stylesheet_snippets)
+        'snippets': stylesheet_snippets
     },
 
     'sass': {

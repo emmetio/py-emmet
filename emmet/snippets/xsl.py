@@ -1,4 +1,4 @@
-{
+snippets = {
     "tm|tmatch": "xsl:template[match mode]",
     "tn|tname": "xsl:template[name]",
     "call": "xsl:call-template[name]",

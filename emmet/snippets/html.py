@@ -1,4 +1,4 @@
-{
+snippets = {
 	"a": "a[href]",
 	"a:blank": "a[href='http://${0}' target='_blank' rel='noopener noreferrer']",
 	"a:link": "a[href='http://${0}']",

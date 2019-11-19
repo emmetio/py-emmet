@@ -1,4 +1,4 @@
-{
+vocabulary = {
 	"common": ["mujer", "uno", "dolor", "más", "de", "poder", "mismo", "si"],
 	"words": ["ejercicio", "preferencia", "perspicacia", "laboral", "paño",
 		"suntuoso", "molde", "namibia", "planeador", "mirar", "demás", "oficinista", "excepción",

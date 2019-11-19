@@ -1,4 +1,4 @@
-{
+variables = {
 	"lang": "en",
 	"locale": "en-US",
 	"charset": "UTF-8",

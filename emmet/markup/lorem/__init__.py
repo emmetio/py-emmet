@@ -1,22 +1,18 @@
 import re
-import os.path
-import json
 from random import randint
 from ...abbreviation import AbbreviationNode
 from ...config import Config
 from ..implicit_tag import resolve_implicit_tag
+from .latin import vocabulary as latin
+from .russian import vocabulary as ru
+from .spanish import vocabulary as sp
 
 re_lorem = re.compile(r'^lorem([a-z]*)(\d*)(-\d*)?$', re.I)
 
-def read_json(file: str):
-    dirname = os.path.dirname(os.path.abspath(__file__))
-    with open(os.path.join(dirname, file), 'r', encoding='utf8') as f:
-        return json.loads(f.read(None))
-
 vocabularies = {
-    'ru': read_json('russian.json'),
-    'sp': read_json('spanish.json'),
-    'latin': read_json('latin.json')
+    'ru': ru,
+    'sp': sp,
+    'latin': latin
 }
 
 def lorem(node: AbbreviationNode, ancestors: list, config: Config):
