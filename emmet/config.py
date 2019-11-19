@@ -3,7 +3,7 @@ import json
 
 def read_json(file: str):
     dirname = os.path.dirname(os.path.abspath(__file__))
-    with open(os.path.join(dirname, 'snippets', file), 'r') as f:
+    with open(os.path.join(dirname, 'snippets', file), 'r', encoding='utf8') as f:
         return json.loads(f.read(None))
 
 

@@ -10,7 +10,7 @@ re_lorem = re.compile(r'^lorem([a-z]*)(\d*)(-\d*)?$', re.I)
 
 def read_json(file: str):
     dirname = os.path.dirname(os.path.abspath(__file__))
-    with open(os.path.join(dirname, file), 'r') as f:
+    with open(os.path.join(dirname, file), 'r', encoding='utf8') as f:
         return json.loads(f.read(None))
 
 vocabularies = {
