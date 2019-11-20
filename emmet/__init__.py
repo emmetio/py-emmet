@@ -11,9 +11,9 @@ from .extract_abbreviation import extract_abbreviation as extract
 from .scanner import ScannerException
 
 
-def expand(abbr: str, config: dict={}) -> str:
+def expand(abbr: str, config: dict={}, global_config: dict={}) -> str:
     "Expands given abbreviation into code snippet"
-    resolved_config = Config(config)
+    resolved_config = Config(config, global_config)
     if resolved_config.type == 'stylesheet':
         return expand_stylesheet(abbr, resolved_config)
 
