@@ -31,11 +31,13 @@ class TokenScanner:
 
     def consume_while(self, test: callable):
         start = self.pos
-        while self.consume(test): pass
+        while self.consume(test):
+            pass
         return self.pos != start
 
     def error(self, message: str, token=None):
-        if token is None: token = self.peek()
+        if token is None:
+            token = self.peek()
         pos = None
         if token and token.start is not None:
             pos = token.start
@@ -45,4 +47,5 @@ class TokenScanner:
 class TokenScannerException(Exception):
     def __init__(self, message: str, pos: int):
         super(TokenScannerException, self).__init__(message)
+        self.message = message
         self.pos = pos
