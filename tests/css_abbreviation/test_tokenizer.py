@@ -269,6 +269,11 @@ class TestScanner(unittest.TestCase):
             { 'type': 'Operator', 'operator': '!', 'start': 6, 'end': 7 }
         ])
 
+        self.assertEqual(json_tokens("${2:0}%"), [
+             { 'type': 'Field', 'index': 2, 'name': '0', 'start': 0, 'end': 6 },
+             { 'type': 'Literal', 'value': '%', 'start': 6, 'end': 7 }
+         ]);
+
     def test_embedded_variables(self):
         self.assertEqual(json_tokens('foo$bar'), [
             { 'type': 'Literal', 'value': 'foo', 'start': 0, 'end': 3 },

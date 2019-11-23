@@ -110,6 +110,8 @@ def literal(scanner: Scanner, short=False):
         scanner.eat_while(is_keyword if start else is_alpha_word)
     elif scanner.eat(is_alpha_word):
         scanner.eat_while(is_alpha_word if short else is_keyword)
+    elif scanner.eat(Chars.Percent):
+        scanner.eat_while(Chars.Percent)
 
     if start != scanner.pos:
         scanner.start = start
