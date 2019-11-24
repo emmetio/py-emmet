@@ -34,7 +34,7 @@ def parse(abbr: str, config: Config):
     # 1. Map each node to snippets, which are abbreviations as well. A single snippet
     # may produce multiple nodes
     # 2. Transform every resolved node
-    walk(abbr, snippets, config)
+    snippets(abbr, config)
     walk(abbr, transform, config)
     return abbr
 

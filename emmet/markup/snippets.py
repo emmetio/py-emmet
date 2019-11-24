@@ -1,8 +1,8 @@
-from ..abbreviation import parse, AbbreviationNode, AbbreviationAttribute
+from ..abbreviation import parse, Abbreviation, AbbreviationNode, AbbreviationAttribute
 from ..config import Config
 from .utils import walk, find_deepest
 
-def resolve_snippets(node: AbbreviationNode, parent_ancestors: list, parent_config: Config):
+def resolve_snippets(abbr: Abbreviation, config: Config):
     """
     Finds matching snippet from `registry` and resolves it into a parsed abbreviation.
     Resolved node is then updated or replaced with matched abbreviation tree.
@@ -13,46 +13,57 @@ def resolve_snippets(node: AbbreviationNode, parent_ancestors: list, parent_conf
     and recursively resolve it.
     """
     stack = []
-    def resolve(child: AbbreviationNode, ancestors: list, config: Config):
+    is_reversed = config.options.get('output.reverseAttributes', False)
+
+    def resolve(child: AbbreviationNode):
         snippet = config.snippets.get(child.name) if child.name else None
         # A snippet in stack means circular reference.
         # It can be either a user error or a perfectly valid snippet like
         # "img": "img[src alt]/", e.g. an element with predefined shape.
         # In any case, simply stop parsing and keep element as is
         if not snippet or snippet in stack:
-            return
+            return None
 
-        abbr = parse(snippet, config)
+        snippet_abbr = parse(snippet, config)
         stack.append(snippet)
-        walk(abbr, resolve, config)
+        walk_resolve(snippet_abbr, resolve)
         stack.pop()
 
-        # Move current node contents into new tree
-        deepest_node = find_deepest(abbr)[1]
-        if isinstance(deepest_node, AbbreviationNode):
-            merge(deepest_node, child)
-            deepest_node.children = deepest_node.children + child.children
-
         # Add attributes from current node into every top-level node of parsed abbreviation
-        if child.attributes:
-            for top_node in abbr.children:
-                from_attr = top_node.attributes or []
-                to_attr = child.attributes or []
-                if config.options.get('output.reverseAttributes'):
-                    top_node.attributes = to_attr + from_attr
-                else:
-                    top_node.attributes = from_attr + to_attr
+        for top_node in snippet_abbr.children:
+            from_attr = top_node.attributes or []
+            to_attr = child.attributes or []
+            if is_reversed:
+                top_node.attributes = to_attr + from_attr
+            else:
+                top_node.attributes = from_attr + to_attr
+            merge(child, top_node)
 
-        # Replace original child with contents of parsed snippet
-        parent = ancestors[-1]
-        ix = parent.children.index(child)
-        parent.children[ix:ix + 1] = abbr.children
+        return snippet_abbr
 
-    resolve(node, parent_ancestors, parent_config)
+    walk_resolve(abbr, resolve)
+    return abbr
+
+
+def walk_resolve(node: AbbreviationNode, resolve: callable) -> list:
+    children = []
+    for child in node.children:
+        resolved = resolve(child)
+        if resolved:
+            children += resolved.children
+
+            deepest = find_deepest(resolved)
+            if isinstance(deepest[1], AbbreviationNode):
+                deepest[1].children += walk_resolve(child, resolve)
+        else:
+            children.append(child)
+            child.children = walk_resolve(child, resolve)
+
+    node.children = children
+    return children
+
 
 def merge(from_node: AbbreviationNode, to_node: AbbreviationNode):
-    to_node.name = from_node.name
-
     if from_node.self_closing:
         to_node.self_closing = True
 
