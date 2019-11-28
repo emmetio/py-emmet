@@ -18,13 +18,14 @@ def tokenize(abbr: str, is_value=False):
 
     while not scanner.eof():
         token = field(scanner) or \
-            literal(scanner, brackets == 0 and not is_value) or \
             number_value(scanner) or \
             color_value(scanner) or \
             string_value(scanner) or \
             bracket(scanner) or \
             operator(scanner) or \
-            white_space(scanner)
+            white_space(scanner) or \
+            literal(scanner, brackets == 0 and not is_value) or \
+            None
 
         if not token:
             raise scanner.error('Unexpected character')
@@ -107,11 +108,13 @@ def literal(scanner: Scanner, short=False):
         # SCSS or LESS variable
         # NB a bit dirty hack: if abbreviation starts with identifier prefix,
         # consume alpha characters only to allow embedded variables
-        scanner.eat_while(is_keyword if start else is_alpha_word)
+        scanner.eat_while(is_keyword if start else is_literal)
     elif scanner.eat(is_alpha_word):
-        scanner.eat_while(is_alpha_word if short else is_keyword)
-    elif scanner.eat(Chars.Percent):
-        scanner.eat_while(Chars.Percent)
+        scanner.eat_while(is_literal if short else is_keyword)
+    else:
+        # Allow dots only at the beginning of literal
+        scanner.eat(Chars.Dot)
+        scanner.eat_while(is_literal)
 
     if start != scanner.pos:
         scanner.start = start
@@ -194,7 +197,7 @@ def white_space(scanner: Scanner):
 def bracket(scanner: Scanner):
     "Consumes bracket from given scanner"
     ch = scanner.peek()
-    if ch == Chars.RoundBracketOpen or ch == Chars.RoundBracketClose:
+    if is_bracket(ch):
         start = scanner.pos
         scanner.pos += 1
         return tokens.Bracket(ch == Chars.RoundBracketOpen, start, scanner.pos)
@@ -242,6 +245,12 @@ def is_hex(ch: str):
 
 def is_keyword(ch: str):
     return is_alpha_numeric_word(ch) or ch == Chars.Dash
+
+def is_bracket(ch: str):
+    return ch in (Chars.RoundBracketOpen, Chars.RoundBracketClose)
+
+def is_literal(ch: str):
+    return is_alpha_word(ch) or ch == Chars.Percent
 
 def parse_color(value: str, alpha=None):
     r = '0'

@@ -108,8 +108,9 @@ class TestScanner(unittest.TestCase):
             { 'type': 'NumberValue', 'value': 0.1, 'raw_value': '.1', 'unit': '', 'start': 0, 'end': 2 },
         ])
 
-        with self.assertRaises(ScannerException):
-            tokenize('.foo')
+        #  NB: now dot should be a part of literal
+        # with self.assertRaises(ScannerException):
+        #     tokenize('.foo')
 
     def test_color_values(self):
         self.assertEqual(json_tokens('c#'), [
@@ -270,8 +271,13 @@ class TestScanner(unittest.TestCase):
         ])
 
         self.assertEqual(json_tokens('${2:0}%'), [
-             { 'type': 'Field', 'index': 2, 'name': '0', 'start': 0, 'end': 6 },
-             { 'type': 'Literal', 'value': '%', 'start': 6, 'end': 7 }
+            { 'type': 'Field', 'index': 2, 'name': '0', 'start': 0, 'end': 6 },
+            { 'type': 'Literal', 'value': '%', 'start': 6, 'end': 7 }
+        ])
+
+        self.assertEqual(json_tokens('.${1:5}'), [
+            { 'type': 'Literal', 'value': '.', 'start': 0, 'end': 1 },
+            { 'type': 'Field', 'index': 1, 'name': '5', 'start': 1, 'end': 7 },
         ])
 
     def test_embedded_variables(self):
