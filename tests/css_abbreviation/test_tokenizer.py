@@ -13,99 +13,99 @@ class TestScanner(unittest.TestCase):
     def test_numeric_values(self):
         self.assertEqual(json_tokens('p10'), [
             { 'type': 'Literal', 'value': 'p', 'start': 0, 'end': 1 },
-            { 'type': 'NumberValue', 'value': 10, 'unit': '', 'start': 1, 'end': 3 }
+            { 'type': 'NumberValue', 'value': 10, 'raw_value': '10', 'unit': '', 'start': 1, 'end': 3 }
         ])
 
         self.assertEqual(json_tokens('p-10'), [
             { 'type': 'Literal', 'value': 'p', 'start': 0, 'end': 1 },
-            { 'type': 'NumberValue', 'value': -10, 'unit': '', 'start': 1, 'end': 4 }
+            { 'type': 'NumberValue', 'value': -10, 'raw_value': '-10', 'unit': '', 'start': 1, 'end': 4 }
         ])
 
         self.assertEqual(json_tokens('p-10-'), [
             { 'type': 'Literal', 'value': 'p', 'start': 0, 'end': 1 },
-            { 'type': 'NumberValue', 'value': -10, 'unit': '', 'start': 1, 'end': 4 },
+            { 'type': 'NumberValue', 'value': -10, 'raw_value': '-10', 'unit': '', 'start': 1, 'end': 4 },
             { 'type': 'Operator', 'operator': '-', 'start': 4, 'end': 5 }
         ])
 
         self.assertEqual(json_tokens('p-10-20'), [
             { 'type': 'Literal', 'value': 'p', 'start': 0, 'end': 1 },
-            { 'type': 'NumberValue', 'value': -10, 'unit': '', 'start': 1, 'end': 4 },
+            { 'type': 'NumberValue', 'value': -10, 'raw_value': '-10', 'unit': '', 'start': 1, 'end': 4 },
             { 'type': 'Operator', 'operator': '-', 'start': 4, 'end': 5 },
-            { 'type': 'NumberValue', 'value': 20, 'unit': '', 'start': 5, 'end': 7 }
+            { 'type': 'NumberValue', 'value': 20, 'raw_value': '20', 'unit': '', 'start': 5, 'end': 7 }
         ])
 
         self.assertEqual(json_tokens('p-10--20'), [
             { 'type': 'Literal', 'value': 'p', 'start': 0, 'end': 1 },
-            { 'type': 'NumberValue', 'value': -10, 'unit': '', 'start': 1, 'end': 4 },
+            { 'type': 'NumberValue', 'value': -10, 'raw_value': '-10', 'unit': '', 'start': 1, 'end': 4 },
             { 'type': 'Operator', 'operator': '-', 'start': 4, 'end': 5 },
-            { 'type': 'NumberValue', 'value': -20, 'unit': '', 'start': 5, 'end': 8 }
+            { 'type': 'NumberValue', 'value': -20, 'raw_value': '-20', 'unit': '', 'start': 5, 'end': 8 }
         ])
 
         self.assertEqual(json_tokens('p-10-20--30'), [
             { 'type': 'Literal', 'value': 'p', 'start': 0, 'end': 1 },
-            { 'type': 'NumberValue', 'value': -10, 'unit': '', 'start': 1, 'end': 4 },
+            { 'type': 'NumberValue', 'value': -10, 'raw_value': '-10', 'unit': '', 'start': 1, 'end': 4 },
             { 'type': 'Operator', 'operator': '-', 'start': 4, 'end': 5 },
-            { 'type': 'NumberValue', 'value': 20, 'unit': '', 'start': 5, 'end': 7 },
+            { 'type': 'NumberValue', 'value': 20, 'raw_value': '20', 'unit': '', 'start': 5, 'end': 7 },
             { 'type': 'Operator', 'operator': '-', 'start': 7, 'end': 8 },
-            { 'type': 'NumberValue', 'value': -30, 'unit': '', 'start': 8, 'end': 11 }
+            { 'type': 'NumberValue', 'value': -30, 'raw_value': '-30', 'unit': '', 'start': 8, 'end': 11 }
         ])
 
         self.assertEqual(json_tokens('p-10p-20--30'), [
             { 'type': 'Literal', 'value': 'p', 'start': 0, 'end': 1 },
-            { 'type': 'NumberValue', 'value': -10, 'unit': 'p', 'start': 1, 'end': 5 },
-            { 'type': 'NumberValue', 'value': -20, 'unit': '', 'start': 5, 'end': 8 },
+            { 'type': 'NumberValue', 'value': -10, 'raw_value': '-10', 'unit': 'p', 'start': 1, 'end': 5 },
+            { 'type': 'NumberValue', 'value': -20, 'raw_value': '-20', 'unit': '', 'start': 5, 'end': 8 },
             { 'type': 'Operator', 'operator': '-', 'start': 8, 'end': 9 },
-            { 'type': 'NumberValue', 'value': -30, 'unit': '', 'start': 9, 'end': 12 }
+            { 'type': 'NumberValue', 'value': -30, 'raw_value': '-30', 'unit': '', 'start': 9, 'end': 12 }
         ])
 
         self.assertEqual(json_tokens('p-10%-20--30'), [
             { 'type': 'Literal', 'value': 'p', 'start': 0, 'end': 1 },
-            { 'type': 'NumberValue', 'value': -10, 'unit': '%', 'start': 1, 'end': 5 },
-            { 'type': 'NumberValue', 'value': -20, 'unit': '', 'start': 5, 'end': 8 },
+            { 'type': 'NumberValue', 'value': -10, 'raw_value': '-10', 'unit': '%', 'start': 1, 'end': 5 },
+            { 'type': 'NumberValue', 'value': -20, 'raw_value': '-20', 'unit': '', 'start': 5, 'end': 8 },
             { 'type': 'Operator', 'operator': '-', 'start': 8, 'end': 9 },
-            { 'type': 'NumberValue', 'value': -30, 'unit': '', 'start': 9, 'end': 12 }
+            { 'type': 'NumberValue', 'value': -30, 'raw_value': '-30', 'unit': '', 'start': 9, 'end': 12 }
         ])
 
     def test_float_values(self):
         self.assertEqual(json_tokens('p.5'), [
             { 'type': 'Literal', 'value': 'p', 'start': 0, 'end': 1 },
-            { 'type': 'NumberValue', 'value': 0.5, 'unit': '', 'start': 1, 'end': 3 }
+            { 'type': 'NumberValue', 'value': 0.5, 'raw_value': '.5', 'unit': '', 'start': 1, 'end': 3 }
         ])
 
         self.assertEqual(json_tokens('p-.5'), [
             { 'type': 'Literal', 'value': 'p', 'start': 0, 'end': 1 },
-            { 'type': 'NumberValue', 'value': -0.5, 'unit': '', 'start': 1, 'end': 4 }
+            { 'type': 'NumberValue', 'value': -0.5, 'raw_value': '-.5', 'unit': '', 'start': 1, 'end': 4 }
         ])
 
         self.assertEqual(json_tokens('p.1.2.3'), [
             { 'type': 'Literal', 'value': 'p', 'start': 0, 'end': 1 },
-            { 'type': 'NumberValue', 'value': 0.1, 'unit': '', 'start': 1, 'end': 3 },
-            { 'type': 'NumberValue', 'value': 0.2, 'unit': '', 'start': 3, 'end': 5 },
-            { 'type': 'NumberValue', 'value': 0.3, 'unit': '', 'start': 5, 'end': 7 }
+            { 'type': 'NumberValue', 'value': 0.1, 'raw_value': '.1', 'unit': '', 'start': 1, 'end': 3 },
+            { 'type': 'NumberValue', 'value': 0.2, 'raw_value': '.2', 'unit': '', 'start': 3, 'end': 5 },
+            { 'type': 'NumberValue', 'value': 0.3, 'raw_value': '.3', 'unit': '', 'start': 5, 'end': 7 }
         ])
 
         self.assertEqual(json_tokens('p.1-.2.3'), [
             { 'type': 'Literal', 'value': 'p', 'start': 0, 'end': 1 },
-            { 'type': 'NumberValue', 'value': 0.1, 'unit': '', 'start': 1, 'end': 3 },
+            { 'type': 'NumberValue', 'value': 0.1, 'raw_value': '.1', 'unit': '', 'start': 1, 'end': 3 },
             { 'type': 'Operator', 'operator': '-', 'start': 3, 'end': 4 },
-            { 'type': 'NumberValue', 'value': 0.2, 'unit': '', 'start': 4, 'end': 6 },
-            { 'type': 'NumberValue', 'value': 0.3, 'unit': '', 'start': 6, 'end': 8 }
+            { 'type': 'NumberValue', 'value': 0.2, 'raw_value': '.2', 'unit': '', 'start': 4, 'end': 6 },
+            { 'type': 'NumberValue', 'value': 0.3, 'raw_value': '.3', 'unit': '', 'start': 6, 'end': 8 }
         ])
 
         self.assertEqual(json_tokens('p.1--.2.3'), [
             { 'type': 'Literal', 'value': 'p', 'start': 0, 'end': 1 },
-            { 'type': 'NumberValue', 'value': 0.1, 'unit': '', 'start': 1, 'end': 3 },
+            { 'type': 'NumberValue', 'value': 0.1, 'raw_value': '.1', 'unit': '', 'start': 1, 'end': 3 },
             { 'type': 'Operator', 'operator': '-', 'start': 3, 'end': 4 },
-            { 'type': 'NumberValue', 'value': -0.2, 'unit': '', 'start': 4, 'end': 7 },
-            { 'type': 'NumberValue', 'value': 0.3, 'unit': '', 'start': 7, 'end': 9 }
+            { 'type': 'NumberValue', 'value': -0.2, 'raw_value': '-.2', 'unit': '', 'start': 4, 'end': 7 },
+            { 'type': 'NumberValue', 'value': 0.3, 'raw_value': '.3', 'unit': '', 'start': 7, 'end': 9 }
         ])
 
         self.assertEqual(json_tokens('10'), [
-            { 'type': 'NumberValue', 'value': 10, 'unit': '', 'start': 0, 'end': 2 },
+            { 'type': 'NumberValue', 'value': 10, 'raw_value': '10', 'unit': '', 'start': 0, 'end': 2 },
         ])
 
         self.assertEqual(json_tokens('.1'), [
-            { 'type': 'NumberValue', 'value': 0.1, 'unit': '', 'start': 0, 'end': 2 },
+            { 'type': 'NumberValue', 'value': 0.1, 'raw_value': '.1', 'unit': '', 'start': 0, 'end': 2 },
         ])
 
         with self.assertRaises(ScannerException):
@@ -182,14 +182,14 @@ class TestScanner(unittest.TestCase):
             { 'type': 'Literal', 'value': 'm', 'start': 0, 'end': 1 },
             { 'type': 'Operator', 'operator': '-', 'start': 1, 'end': 2 },
             { 'type': 'Literal', 'value': 'a', 'start': 2, 'end': 3 },
-            { 'type': 'NumberValue', 'value': 0, 'unit': '', 'start': 3, 'end': 4 }
+            { 'type': 'NumberValue', 'value': 0, 'raw_value': '0', 'unit': '', 'start': 3, 'end': 4 }
         ])
 
         self.assertEqual(json_tokens('m-a0-a'), [
             { 'type': 'Literal', 'value': 'm', 'start': 0, 'end': 1 },
             { 'type': 'Operator', 'operator': '-', 'start': 1, 'end': 2 },
             { 'type': 'Literal', 'value': 'a', 'start': 2, 'end': 3 },
-            { 'type': 'NumberValue', 'value': 0, 'unit': '', 'start': 3, 'end': 4 },
+            { 'type': 'NumberValue', 'value': 0, 'raw_value': '0', 'unit': '', 'start': 3, 'end': 4 },
             { 'type': 'Operator', 'operator': '-', 'start': 4, 'end': 5 },
             { 'type': 'Literal', 'value': 'a', 'start': 5, 'end': 6 }
         ])
@@ -206,16 +206,16 @@ class TestScanner(unittest.TestCase):
             { 'type': 'WhiteSpace', 'start': 21, 'end': 22 },
             { 'type': 'Literal', 'value': 'rgb', 'start': 22, 'end': 25 },
             { 'type': 'Bracket', 'open': True, 'start': 25, 'end': 26 },
-            { 'type': 'NumberValue', 'value': 0, 'unit': '', 'start': 26, 'end': 27 },
+            { 'type': 'NumberValue', 'value': 0, 'raw_value': '0', 'unit': '', 'start': 26, 'end': 27 },
             { 'type': 'Operator', 'operator': ',', 'start': 27, 'end': 28 },
             { 'type': 'WhiteSpace', 'start': 28, 'end': 29 },
-            { 'type': 'NumberValue', 'value': 0, 'unit': '', 'start': 29, 'end': 30 },
+            { 'type': 'NumberValue', 'value': 0, 'raw_value': '0', 'unit': '', 'start': 29, 'end': 30 },
             { 'type': 'Operator', 'operator': ',', 'start': 30, 'end': 31 },
             { 'type': 'WhiteSpace', 'start': 31, 'end': 32 },
-            { 'type': 'NumberValue', 'value': 0, 'unit': '', 'start': 32, 'end': 33 },
+            { 'type': 'NumberValue', 'value': 0, 'raw_value': '0', 'unit': '', 'start': 32, 'end': 33 },
             { 'type': 'Bracket', 'open': False, 'start': 33, 'end': 34 },
             { 'type': 'WhiteSpace', 'start': 34, 'end': 35 },
-            { 'type': 'NumberValue', 'value': 10, 'unit': '%', 'start': 35, 'end': 38 },
+            { 'type': 'NumberValue', 'value': 10, 'raw_value': '10', 'unit': '%', 'start': 35, 'end': 38 },
             { 'type': 'Bracket', 'open': False, 'start': 38, 'end': 39 }
         ])
 
@@ -231,14 +231,14 @@ class TestScanner(unittest.TestCase):
 
         self.assertEqual(json_tokens('p10!'), [
             { 'type': 'Literal', 'value': 'p', 'start': 0, 'end': 1 },
-            { 'type': 'NumberValue', 'value': 10, 'unit': '', 'start': 1, 'end': 3 },
+            { 'type': 'NumberValue', 'value': 10, 'raw_value': '10', 'unit': '', 'start': 1, 'end': 3 },
             { 'type': 'Operator', 'operator': '!', 'start': 3, 'end': 4 }
         ])
 
     def test_mixed(self):
         self.assertEqual(json_tokens('bd1-s#fc0'), [
             { 'type': 'Literal', 'value': 'bd', 'start': 0, 'end': 2 },
-            { 'type': 'NumberValue', 'value': 1, 'unit': '', 'start': 2, 'end': 3 },
+            { 'type': 'NumberValue', 'value': 1, 'raw_value': '1', 'unit': '', 'start': 2, 'end': 3 },
             { 'type': 'Operator', 'operator': '-', 'start': 3, 'end': 4 },
             { 'type': 'Literal', 'value': 's', 'start': 4, 'end': 5 },
             { 'type': 'ColorValue', 'r': 255, 'g': 204, 'b': 0, 'a': 1, 'raw': 'fc0', 'start': 5, 'end': 9 }
@@ -248,31 +248,31 @@ class TestScanner(unittest.TestCase):
             { 'type': 'Literal', 'value': 'bd', 'start': 0, 'end': 2 },
             { 'type': 'ColorValue', 'r': 255, 'g': 204, 'b': 0, 'a': 1, 'raw': 'fc0', 'start': 2, 'end': 6 },
             { 'type': 'Operator', 'operator': '-', 'start': 6, 'end': 7 },
-            { 'type': 'NumberValue', 'value': 1, 'unit': '', 'start': 7, 'end': 8 }
+            { 'type': 'NumberValue', 'value': 1, 'raw_value': '1', 'unit': '', 'start': 7, 'end': 8 }
         ])
 
         self.assertEqual(json_tokens('p0+m0'), [
             { 'type': 'Literal', 'value': 'p', 'start': 0, 'end': 1 },
-            { 'type': 'NumberValue', 'value': 0, 'unit': '', 'start': 1, 'end': 2 },
+            { 'type': 'NumberValue', 'value': 0, 'raw_value': '0', 'unit': '', 'start': 1, 'end': 2 },
             { 'type': 'Operator', 'operator': '+', 'start': 2, 'end': 3 },
             { 'type': 'Literal', 'value': 'm', 'start': 3, 'end': 4 },
-            { 'type': 'NumberValue', 'value': 0, 'unit': '', 'start': 4, 'end': 5 }
+            { 'type': 'NumberValue', 'value': 0, 'raw_value': '0', 'unit': '', 'start': 4, 'end': 5 }
         ])
 
         self.assertEqual(json_tokens('p0!+m0!'), [
             { 'type': 'Literal', 'value': 'p', 'start': 0, 'end': 1 },
-            { 'type': 'NumberValue', 'value': 0, 'unit': '', 'start': 1, 'end': 2 },
+            { 'type': 'NumberValue', 'value': 0, 'raw_value': '0', 'unit': '', 'start': 1, 'end': 2 },
             { 'type': 'Operator', 'operator': '!', 'start': 2, 'end': 3 },
             { 'type': 'Operator', 'operator': '+', 'start': 3, 'end': 4 },
             { 'type': 'Literal', 'value': 'm', 'start': 4, 'end': 5 },
-            { 'type': 'NumberValue', 'value': 0, 'unit': '', 'start': 5, 'end': 6 },
+            { 'type': 'NumberValue', 'value': 0, 'raw_value': '0', 'unit': '', 'start': 5, 'end': 6 },
             { 'type': 'Operator', 'operator': '!', 'start': 6, 'end': 7 }
         ])
 
-        self.assertEqual(json_tokens("${2:0}%"), [
+        self.assertEqual(json_tokens('${2:0}%'), [
              { 'type': 'Field', 'index': 2, 'name': '0', 'start': 0, 'end': 6 },
              { 'type': 'Literal', 'value': '%', 'start': 6, 'end': 7 }
-         ]);
+        ])
 
     def test_embedded_variables(self):
         self.assertEqual(json_tokens('foo$bar'), [
@@ -293,5 +293,5 @@ class TestScanner(unittest.TestCase):
 
         self.assertEqual(json_tokens('@k10'), [
             { 'type': 'Literal', 'value': '@k', 'start': 0, 'end': 2 },
-            { 'type': 'NumberValue', 'value': 10, 'unit': '', 'start': 2, 'end': 4 }
+            { 'type': 'NumberValue', 'value': 10, 'raw_value': '10', 'unit': '', 'start': 2, 'end': 4 }
         ])

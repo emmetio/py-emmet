@@ -63,11 +63,12 @@ class Literal(Token):
         self.value = value
 
 class NumberValue(Token):
-    __slots__ = ('value', 'unit')
+    __slots__ = ('value', 'raw_value', 'unit')
 
-    def __init__(self, value: int, unit='', *args):
+    def __init__(self, value: int, raw_value: str, unit='', *args):
         super(NumberValue, self).__init__(*args)
         self.value = value
+        self.raw_value = raw_value
         self.unit = unit
 
 class ColorValue(Token):

@@ -90,7 +90,8 @@ def match(source: str, pos: int, opt: dict=None) -> MatchedTag:
                 if tag.start < pos < end:
                     result[0] = MatchedTag(name, get_attributes(source, tag.start, tag.end, name), (tag.start, tag.end), (start, end))
                     return False
-                elif stack:
+
+                if stack:
                     # Release tag object for further re-use
                     release_tag(pool, stack.pop())
 

@@ -130,12 +130,13 @@ def number_value(scanner: Scanner):
     start = scanner.pos
     if consume_number(scanner):
         scanner.start = start
-        value = float(scanner.current())
+        raw_value = scanner.current()
+        value = float(raw_value)
 
         # eat unit, which can be a % or alpha word
         scanner.start = scanner.pos
         scanner.eat(Chars.Percent) or scanner.eat_while(is_alpha_word)
-        return tokens.NumberValue(value, scanner.current(), start, scanner.pos)
+        return tokens.NumberValue(value, raw_value, scanner.current(), start, scanner.pos)
 
 def string_value(scanner: Scanner):
     "Consumes quoted string value from given scanner"
@@ -215,12 +216,16 @@ def consume_number(stream: Scanner):
     stream.eat(Chars.Dash)
     after_negative = stream.pos
 
-    stream.eat_while(is_number)
+    has_decimal = stream.eat_while(is_number)
 
     prev_pos = stream.pos
-    if stream.eat(Chars.Dot) and not stream.eat_while(is_number):
-        # Number followed by a dot, but then no number
-        stream.pos = prev_pos
+    if stream.eat(Chars.Dot):
+        # It’s perfectly valid to have numbers like `1.`, which enforces
+        # value to float unit type
+        has_float = stream.eat_while(is_number)
+        if not has_decimal and not has_float:
+            # Lone dot
+            stream.pos = prev_pos
 
     # Edge case: consumed dash only: not a number, bail-out
     if stream.pos == after_negative:

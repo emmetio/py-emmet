@@ -21,6 +21,7 @@ class TestCSSParser(unittest.TestCase):
         self.assertEqual(expand('p.1-.2.3'), 'p: 0.1 0.2 0.3;')
         self.assertEqual(expand('10'), '?: 10;')
         self.assertEqual(expand('.1'), '?: 0.1;')
+        self.assertEqual(expand('lh1.'), 'lh: 1;')
 
     def test_color(self):
         self.assertEqual(expand('c#'), 'c: #000000;')
