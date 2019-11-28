@@ -95,6 +95,8 @@ class TestStylesheetAbbreviations(unittest.TestCase):
         self.assertEqual(expand('p0'), 'padding: 0;', 'No unit for 0')
         self.assertEqual(expand('p10'), 'padding: 10px;', '`px` unit for integers')
         self.assertEqual(expand('p.4'), 'padding: 0.4em;', '`em` for floats')
+        self.assertEqual(expand('fz10'), 'font-size: 10px;', '`px` for integers')
+        self.assertEqual(expand('fz1.'), 'font-size: 1em;', '`em` for explicit float')
         self.assertEqual(expand('p10p'), 'padding: 10%;', 'unit alias')
         self.assertEqual(expand('z10'), 'z-index: 10;', 'Unitless property')
         self.assertEqual(expand('p10r'), 'padding: 10rem;', 'unit alias')

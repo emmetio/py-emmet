@@ -240,11 +240,8 @@ def resolve_numeric_value(node: CSSProperty, config: Config):
                 if t.unit:
                     t.unit = aliases.get(t.unit, t.unit)
                 elif t.value != 0 and node.name not in unitless:
-                    # use `px` for integers, `em` for floats
-                    if t.value == round(t.value):
-                        t.unit = config.options.get('stylesheet.intUnit', '')
-                    else:
-                        t.unit = config.options.get('stylesheet.floatUnit', '')
+                    opt_name = 'stylesheet.floatUnit' if '.' in t.raw_value else 'stylesheet.intUnit'
+                    t.unit = config.options.get(opt_name, '')
 
 
 def has_field(value: CSSValue):
