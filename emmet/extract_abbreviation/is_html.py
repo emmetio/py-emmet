@@ -1,4 +1,5 @@
 from .reader import BackwardScanner
+from .brackets import Brackets, BRACE_PAIRS
 from ..scanner_utils import is_alpha, is_number, is_quote
 
 class Chars:
@@ -80,7 +81,22 @@ def consume_attribute_with_quoted_value(scanner: BackwardScanner):
 
 def consume_attribute_with_unquoted_value(scanner: BackwardScanner):
     start = scanner.pos
-    if scanner.consume_while(is_unquoted_value) and scanner.consume(Chars.Equals) and consume_ident(scanner):
+    stack = []
+
+    while not scanner.sol():
+        ch = scanner.peek()
+        if is_close_bracket(ch):
+            stack.append(ch)
+        elif is_open_bracket(ch):
+            if not stack or stack.pop() != BRACE_PAIRS[ch]:
+                # Unexpected open bracket
+                break
+        elif not is_unquoted_value(ch):
+            break
+        scanner.pos -= 1
+
+
+    if start != scanner.pos and scanner.consume(Chars.Equals) and consume_ident(scanner):
         return True
 
     scanner.pos = start
@@ -114,6 +130,15 @@ def is_white_space(ch: str):
     "Check if given code is a whitespace"
     return ch == Chars.Space or ch == Chars.Tab
 
+
 def is_unquoted_value(ch: str):
     "Check if given code may belong to unquoted attribute value"
     return ch and ch != Chars.Equals and not is_white_space(ch) and not is_quote(ch)
+
+
+def is_open_bracket(ch: int):
+    return ch in (Brackets.CurlyL, Brackets.RoundL, Brackets.SquareL)
+
+
+def is_close_bracket(ch: int):
+    return ch in (Brackets.CurlyR, Brackets.RoundR, Brackets.SquareR)

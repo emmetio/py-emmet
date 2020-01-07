@@ -1,6 +1,7 @@
 import re
 from .reader import BackwardScanner
 from .is_html import is_html as is_at_html_tag, is_quote
+from .brackets import Brackets, BRACE_PAIRS
 from ..scanner_utils import is_alpha, is_number
 
 class ExtractedAbbreviation:
@@ -36,20 +37,7 @@ class ExtractedAbbreviation:
             'end': self.end,
         })
 
-class Brackets:
-    SquareL = '['
-    SquareR = ']'
-    RoundL = '('
-    RoundR = ')'
-    CurlyL = '{'
-    CurlyR = '}'
-
 SPECIAL_CHARS = '#.*:$-_!@%^+>/'
-BRACE_PAIRS = dict([
-    (Brackets.SquareL, Brackets.SquareR),
-    (Brackets.RoundL, Brackets.RoundR),
-    (Brackets.CurlyL, Brackets.CurlyR),
-])
 
 def extract_abbreviation(line: str, pos: int=None, options={}) -> ExtractedAbbreviation:
     """

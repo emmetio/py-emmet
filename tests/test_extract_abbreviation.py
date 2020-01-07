@@ -31,6 +31,11 @@ class TestExtractAbbreviation(unittest.TestCase):
         self.assertEqual(extract('текстdiv'), result('div', 5))
         self.assertEqual(extract('foo div[foo="текст" bar=текст2]'), result('div[foo="текст" bar=текст2]', 4))
 
+        # https://github.com/emmetio/emmet/issues/577
+        self.assertEqual(
+            extract('table>(tr.prefix-intro>td*1)+(tr.prefix-pro-con>th*1+td*3)+(tr.prefix-key-specs>th[colspan=2]*1+td[colspan=2]*3)+(tr.prefix-key-find-online>th[colspan=2]*1+td*2)'),
+            result('table>(tr.prefix-intro>td*1)+(tr.prefix-pro-con>th*1+td*3)+(tr.prefix-key-specs>th[colspan=2]*1+td[colspan=2]*3)+(tr.prefix-key-find-online>th[colspan=2]*1+td*2)', 0))
+
     def test_abbreviation_with_operators(self):
         self.assertEqual(extract('a foo+bar.baz'), result('foo+bar.baz', 2))
         self.assertEqual(extract('a foo>bar+baz*3'), result('foo>bar+baz*3', 2))
