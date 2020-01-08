@@ -1,6 +1,7 @@
 from .css import snippets as raw_stylesheet_snippets
 from .html import snippets as raw_markup_snippets
 from .xsl import snippets as raw_xsl_snippets
+from .pug import snippets as raw_pug_snippets
 from .variables import variables
 
 def parse_snippets(snippets: dict):
@@ -19,3 +20,4 @@ def parse_snippets(snippets: dict):
 markup_snippets = parse_snippets(raw_markup_snippets)
 stylesheet_snippets = parse_snippets(raw_stylesheet_snippets)
 xsl_snippets = parse_snippets(raw_xsl_snippets)
+pug_snippets = parse_snippets(raw_pug_snippets)

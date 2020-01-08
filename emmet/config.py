@@ -1,4 +1,4 @@
-from .snippets import markup_snippets, stylesheet_snippets, xsl_snippets, variables
+from .snippets import markup_snippets, stylesheet_snippets, xsl_snippets, pug_snippets, variables
 
 DEFAULT_SYNTAXES = { 'markup': 'html', 'stylesheet': 'css' }
 "Default syntaxes for abbreviation types"
@@ -96,6 +96,9 @@ SYNTAX_CONFIG = {
         'options': {
             'jsx.enabled': True
         }
+    },
+    'pug': {
+        'snippets': pug_snippets
     },
 
     'stylesheet': {

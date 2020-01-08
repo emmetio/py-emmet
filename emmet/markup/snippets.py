@@ -31,12 +31,13 @@ def resolve_snippets(abbr: Abbreviation, config: Config):
 
         # Add attributes from current node into every top-level node of parsed abbreviation
         for top_node in snippet_abbr.children:
-            from_attr = top_node.attributes or []
-            to_attr = child.attributes or []
-            if is_reversed:
-                top_node.attributes = to_attr + from_attr
-            else:
-                top_node.attributes = from_attr + to_attr
+            if child.attributes:
+                from_attr = top_node.attributes or []
+                to_attr = child.attributes or []
+                if is_reversed:
+                    top_node.attributes = to_attr + from_attr
+                else:
+                    top_node.attributes = from_attr + to_attr
             merge(child, top_node)
 
         return snippet_abbr

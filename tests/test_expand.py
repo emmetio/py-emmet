@@ -96,3 +96,8 @@ class TestExpandMarkup(unittest.TestCase):
     def test_wrap_with_abbreviation(self):
         self.assertEqual(expand('div>ul', { 'text': ['<div>line1</div>\n<div>line2</div>'] }),
             '<div>\n\t<ul>\n\t\t<div>line1</div>\n\t\t<div>line2</div>\n\t</ul>\n</div>')
+
+class TestExpandPug(unittest.TestCase):
+    def test_basics(self):
+        self.assertEqual(expand('!', { 'syntax': 'pug' }),
+            'doctype html\nhtml(lang="en")\n\thead\n\t\tmeta(charset="UTF-8")\n\t\tmeta(name="viewport", content="width=device-width, initial-scale=1.0")\n\t\ttitle Document\n\tbody ')

@@ -43,7 +43,8 @@ def element(node: AbbreviationNode, index: int, items: list, state: IndentWalkSt
     push_secondary_attributes(list(filter(should_output_attribute, secondary)), state)
 
     if node.self_closing and not node.value and not node.children:
-        out.push_string('/')
+        if state.options['selfClose']:
+            out.push_string(state.options['selfClose'])
     else:
         push_value(node, state)
         for index, child in enumerate(node.children):

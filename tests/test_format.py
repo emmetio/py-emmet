@@ -186,7 +186,10 @@ class TestPUGFormat(unittest.TestCase):
         self.assertEqual(output_pug('div#foo[data-n1=v1 title=test data-n2=v2].bar'),
             '#foo.bar(data-n1="v1", title="test", data-n2="v2") ')
 
-        self.assertEqual(output_pug('input[disabled. foo title=test]'), 'input(type="text", disabled, foo="", title="test")/')
+        self.assertEqual(output_pug('input[disabled. foo title=test]'), 'input(type="text", disabled, foo="", title="test")')
+        # Use closing slash for XML output format
+        self.assertEqual(output_pug('input[disabled. foo title=test]', create_profile({ 'output.selfClosingStyle': 'xml' })), 'input(type="text", disabled, foo="", title="test")/');
+
 
     def test_nodes_with_test(self):
         self.assertEqual(output_pug('{Text 1}'), 'Text 1')
@@ -201,7 +204,7 @@ class TestPUGFormat(unittest.TestCase):
         self.assertEqual(output_pug('{${0} ${1:foo} ${2:bar}}*2', field), '${1} ${2:foo} ${3:bar}${4} ${5:foo} ${6:bar}')
         self.assertEqual(output_pug('{${0} ${1:foo} ${2:bar}}*2'), ' foo bar foo bar')
         self.assertEqual(output_pug('ul>li*2', field), 'ul\n\tli ${1}\n\tli ${2}')
-        self.assertEqual(output_pug('div>img[src]/', field), 'div\n\timg(src="${1}", alt="${2}")/')
+        self.assertEqual(output_pug('div>img[src]/', field), 'div\n\timg(src="${1}", alt="${2}")')
 
 
 def output_slim(abbr: str, config=default_config):
