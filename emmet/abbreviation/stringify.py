@@ -76,7 +76,7 @@ def RepeaterNumber(token: tokens.RepeaterNumber, state):
     if last_ix >= 0:
         repeater = state.repeaters[-1]
         if token.reverse:
-            value = token.base + repeater.count - repeater.value
+            value = token.base + repeater.count - repeater.value - 1
         else:
             value = token.base + repeater.value
 
