@@ -19,13 +19,12 @@ default_config = Config({
     'snippets': {
         'mten': 'margin: 10px;',
         'fsz': 'font-size'
-    }
+    },
+    'cache': {}
 })
-snippets = parse_stylesheet_snippets(default_config.snippets)
 
 def expand(abbr: str, config=default_config):
-    global snippets
-    return expand_stylesheet(abbr, config, snippets)
+    return expand_stylesheet(abbr, config)
 
 
 def pick(abbr: str, items: list):
@@ -114,6 +113,7 @@ class TestStylesheetAbbreviations(unittest.TestCase):
 
     def test_numeric_with_format(self):
         config = Config({
+            'type': 'stylesheet',
             'options': {
                 'stylesheet.intUnit': 'pt',
                 'stylesheet.floatUnit': 'vh',
@@ -159,11 +159,18 @@ class TestStylesheetAbbreviations(unittest.TestCase):
         self.assertEqual(expand('lg(to right, #0, #f00.5)'), 'background-image: linear-gradient(to right, #000, rgba(255, 0, 0, 0.5));')
 
     def test_min_score(self):
-        self.assertEqual(expand('auto', Config({ 'options': { 'stylesheet.fuzzySearchMinScore': 0 } })), 'align-self: unset;')
-        self.assertEqual(expand('auto', Config({ 'options': { 'stylesheet.fuzzySearchMinScore': 0.3 } })), 'auto: ;')
+        self.assertEqual(expand('auto', Config({
+            'type': 'stylesheet',
+            'options': { 'stylesheet.fuzzySearchMinScore': 0 }
+        })), 'align-self: unset;')
+        self.assertEqual(expand('auto', Config({
+            'type': 'stylesheet',
+            'options': { 'stylesheet.fuzzySearchMinScore': 0.3 }
+        })), 'auto: ;')
 
     def test_css_in_js(self):
         config = Config({
+            'type': 'stylesheet',
             'options': {
                 'stylesheet.json': True,
                 'stylesheet.between': ': '
@@ -174,6 +181,7 @@ class TestStylesheetAbbreviations(unittest.TestCase):
 
     def test_resolve_context_value(self):
         config = Config({
+            'type': 'stylesheet',
             'context': { 'name': 'align-content' }
         })
 

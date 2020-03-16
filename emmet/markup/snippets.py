@@ -26,7 +26,7 @@ def resolve_snippets(abbr: Abbreviation, config: Config):
 
         snippet_abbr = parse(snippet, config)
         stack.append(snippet)
-        walk_resolve(snippet_abbr, resolve)
+        walk_resolve(snippet_abbr, resolve, config)
         stack.pop()
 
         # Add attributes from current node into every top-level node of parsed abbreviation
@@ -42,23 +42,33 @@ def resolve_snippets(abbr: Abbreviation, config: Config):
 
         return snippet_abbr
 
-    walk_resolve(abbr, resolve)
+    walk_resolve(abbr, resolve, config)
     return abbr
 
 
-def walk_resolve(node: AbbreviationNode, resolve: callable) -> list:
+def walk_resolve(node: AbbreviationNode, resolve: callable, config: Config) -> list:
     children = []
+    lookup = config.cache.get('markupSnippets', {}) if config.cache is not None else {}
+
     for child in node.children:
-        resolved = resolve(child)
+        resolved = None
+        if child.name and child.name in lookup:
+            resolved = lookup[child.name]
+        else:
+            resolved = resolve(child)
+
         if resolved:
             children += resolved.children
 
             deepest = find_deepest(resolved)
             if isinstance(deepest[1], AbbreviationNode):
-                deepest[1].children += walk_resolve(child, resolve)
+                deepest[1].children += walk_resolve(child, resolve, config)
         else:
             children.append(child)
-            child.children = walk_resolve(child, resolve)
+            child.children = walk_resolve(child, resolve, config)
+
+        if child.name:
+            lookup[child.name] = resolved
 
     node.children = children
     return children

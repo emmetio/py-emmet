@@ -9,13 +9,17 @@ from .format import stringify
 
 gradient_name = 'lg'
 
-def parse(abbr: str, config: Config, snippets: list=None):
+def parse(abbr: str, config: Config):
     """
     Parses given Emmet abbreviation into a final abbreviation tree with all
     required transformations applied
     """
+    snippets = config.cache.get('stylesheet_snippets') if config.cache is not None else None
+
     if snippets is None:
         snippets = convert_snippets(config.snippets)
+        if config.cache is not None:
+            config.cache['stylesheet_snippets'] = snippets
 
     if isinstance(abbr, str):
         abbr = abbreviation(abbr, { 'value': bool(config.context) })

@@ -8,7 +8,7 @@ from emmet.markup import parse
 from .stringify import stringify_node
 
 default_config = Config()
-bem = Config({ 'options': { 'bem.enabled': True } })
+bem = Config({ 'options': { 'bem.enabled': True }, 'cache': {} })
 
 def expand(abbr: str, config=default_config):
     return stringify_node(parse(abbr, config))

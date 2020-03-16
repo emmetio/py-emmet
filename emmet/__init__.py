@@ -29,10 +29,10 @@ def expand_markup(abbr: str, config: Config) -> str:
     return stringify_markup(markup_abbreviation(abbr, config), config)
 
 
-def expand_stylesheet(abbr: str, config: Config, snippets: list=None):
+def expand_stylesheet(abbr: str, config: Config):
     """
     Expands given *stylesheet* abbreviation (a special Emmet abbreviation designed for
     stylesheet languages like CSS, SASS etc.) and outputs it according to options
     provided in config
     """
-    return stringify_stylesheet(stylesheet_abbreviation(abbr, config, snippets), config)
+    return stringify_stylesheet(stylesheet_abbreviation(abbr, config), config)

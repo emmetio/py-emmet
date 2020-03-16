@@ -119,7 +119,7 @@ SYNTAX_CONFIG = {
 }
 
 class Config:
-    __slots__ = ('type', 'syntax', 'variables', 'snippets', 'options', 'user_config', 'context')
+    __slots__ = ('type', 'syntax', 'variables', 'snippets', 'options', 'user_config', 'context', 'cache')
 
     def __init__(self, user_config={}, global_config={}):
         syntax_type = user_config.get('type', 'markup')
@@ -132,6 +132,7 @@ class Config:
         self.variables = merged_data(syntax_type, syntax, 'variables', user_config, global_config)
         self.snippets = merged_data(syntax_type, syntax, 'snippets', user_config, global_config)
         self.options = merged_data(syntax_type, syntax, 'options', user_config, global_config)
+        self.cache = user_config.get('cache')
 
     def get(self, key: str):
         if key in dir(self):
