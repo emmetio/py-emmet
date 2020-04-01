@@ -13,6 +13,7 @@ def field(index: int, placeholder: str, **kwargs):
 
 class TestExpandMarkup(unittest.TestCase):
     def test_basic(self):
+        self.assertEqual(expand('input[value="text$"]*2'), '<input type="text" value="text1"><input type="text" value="text2">')
         self.assertEqual(expand('ul>.item$*2'), '<ul>\n\t<li class="item1"></li>\n\t<li class="item2"></li>\n</ul>')
 
         # insert text into abbreviation

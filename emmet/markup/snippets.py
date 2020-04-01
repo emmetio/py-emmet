@@ -48,14 +48,9 @@ def resolve_snippets(abbr: Abbreviation, config: Config):
 
 def walk_resolve(node: AbbreviationNode, resolve: callable, config: Config) -> list:
     children = []
-    lookup = config.cache.get('markupSnippets', {}) if config.cache is not None else {}
 
     for child in node.children:
-        resolved = None
-        if child.name and child.name in lookup:
-            resolved = lookup[child.name]
-        else:
-            resolved = resolve(child)
+        resolved = resolve(child)
 
         if resolved:
             children += resolved.children
@@ -66,9 +61,6 @@ def walk_resolve(node: AbbreviationNode, resolve: callable, config: Config) -> l
         else:
             children.append(child)
             child.children = walk_resolve(child, resolve, config)
-
-        if child.name:
-            lookup[child.name] = resolved
 
     node.children = children
     return children
