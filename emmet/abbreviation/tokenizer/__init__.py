@@ -1,5 +1,5 @@
 from ...scanner import Scanner
-from ...scanner_utils import is_quote, is_space, is_number, is_alpha
+from ...scanner_utils import is_quote, is_space, is_number, is_alpha, is_alpha_numeric_word
 from .utils import Chars, escaped
 from . import tokens
 
@@ -49,11 +49,15 @@ def tokenize(source: str):
 
 
 def literal(scanner: Scanner, ctx: dict):
+    "Consumes literal from given scanner"
     start = scanner.pos
     value = []
 
     while not scanner.eof():
-        "Consumes literal from given scanner"
+        if escaped(scanner):
+            value.append(scanner.current())
+            continue
+
         ch = scanner.peek()
 
         if ch == ctx['quote'] or ch == Chars.Dollar or is_allowed_operator(ch, ctx):
@@ -65,18 +69,19 @@ def literal(scanner: Scanner, ctx: dict):
         if ctx['expression'] and ch == Chars.CurlyBracketClose:
             break
 
-        if not ctx['quote'] and not ctx['expression'] and (
-            is_allowed_space(ch, ctx) or
-            is_allowed_repeater(ch, ctx) or
-            is_quote(ch) or
-            bracket_type(ch)):
-            # Stop for characters not allowed in unquoted literal
-            break
+        if not ctx['quote'] and not ctx['expression']:
+            # Consuming element name
+            if not ctx['attribute'] and not is_element_name(ch):
+                break
 
-        if escaped(scanner):
-            value.append(scanner.current())
-        else:
-            value.append(scanner.next())
+            if is_allowed_space(ch, ctx) or \
+               is_allowed_repeater(ch, ctx) or \
+               is_quote(ch) or \
+               bracket_type(ch):
+                # Stop for characters not allowed in unquoted literal
+                break
+
+        value.append(scanner.next())
 
     if start != scanner.pos:
         scanner.start = start
@@ -256,6 +261,9 @@ def is_open_bracket(ch: str):
     "Check if given character is an open bracket"
     return ch in (Chars.CurlyBracketOpen, Chars.SquareBracketOpen, Chars.RoundBracketOpen)
 
+def is_element_name(ch: str):
+    "Check if given character is allowed in element name"
+    return is_alpha_numeric_word(ch) or ch in (Chars.Dash, Chars.Colon, Chars.Excl)
 
 def inc_pos(scanner: Scanner):
     pos = scanner.pos

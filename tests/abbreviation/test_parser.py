@@ -5,6 +5,7 @@ sys.path.append('../../')
 
 from emmet.abbreviation.parser import parse as parser, TokenScannerException
 from emmet.abbreviation.tokenizer import tokenize
+from emmet.scanner import ScannerException
 from .ast import stringify
 
 def parse(abbr: str, options={}):
@@ -31,6 +32,7 @@ class TestAbbreviationParser(unittest.TestCase):
         self.assertEqual(string('a>b>c+e'), '<a><b><c></c><e></e></b></a>')
         self.assertEqual(string('a>b>c^d'), '<a><b><c></c></b><d></d></a>')
         self.assertEqual(string('a>b>c^^^^d'), '<a><b><c></c></b></a><d></d>')
+        self.assertEqual(string('a:b>c'), '<a:b><c></c></a:b>')
 
         self.assertEqual(string('ul.nav[title="foo"]'), '<ul class=nav title="foo"></ul>')
 
@@ -151,3 +153,12 @@ class TestAbbreviationParser(unittest.TestCase):
         self.assertEqual(string('.{theme.class}', opt), '<? class=theme.class></?>')
         self.assertEqual(string('#{id}', opt), '<? id=id></?>')
         self.assertEqual(string('Foo.{theme.class}', opt), '<Foo class=theme.class></Foo>')
+
+    def test_errors(self):
+        with self.assertRaises(ScannerException):
+            parse('str?')
+
+        with self.assertRaises(ScannerException):
+            parse('foo,bar')
+
+        self.assertEqual(string('foo\\,bar'), '<foo,bar></foo,bar>')
