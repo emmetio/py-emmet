@@ -25,10 +25,8 @@ class Chars:
 
 def escaped(scanner):
     if scanner.eat(Chars.Escape):
-        if scanner.eof():
-            scanner.start = scanner.pos - 1
-        else:
-            scanner.start = scanner.pos
+        scanner.start = scanner.pos
+        if not scanner.eof():
             scanner.pos += 1
 
         return True
