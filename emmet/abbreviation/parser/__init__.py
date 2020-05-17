@@ -72,9 +72,7 @@ def group(scanner: TokenScanner, options: dict):
         token = scanner.next()
         if is_bracket(token, 'group', False):
             result.repeat = repeater(scanner)
-            return result
-
-        raise scanner.error('Expecting )', token)
+        return result
 
 
 def element(scanner: TokenScanner, options: dict):

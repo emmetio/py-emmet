@@ -162,3 +162,9 @@ class TestAbbreviationParser(unittest.TestCase):
             parse('foo,bar')
 
         self.assertEqual(string('foo\\,bar'), '<foo,bar></foo,bar>')
+
+    def test_missingBraces(self):
+        # Do not throw errors on missing closing braces
+        self.assertEqual(string('div[title="test"'), '<div title="test"></div>')
+        self.assertEqual(string('div(foo'), '<div></div>(<foo></foo>)')
+        self.assertEqual(string('div{foo'), '<div>foo</div>')
