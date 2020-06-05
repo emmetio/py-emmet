@@ -138,6 +138,12 @@ class TestStylesheetAbbreviations(unittest.TestCase):
         self.assertEqual(expand('p!'), 'padding: ${0} !important;')
         self.assertEqual(expand('p0!'), 'padding: 0 !important;')
 
+    def test_color(self):
+        self.assertEqual(expand('c'), 'color: ${1:#000};')
+        self.assertEqual(expand('c#'), 'color: #000;')
+        self.assertEqual(expand('c#f.5'), 'color: rgba(255, 255, 255, 0.5);')
+        self.assertEqual(expand('c#f.5!'), 'color: rgba(255, 255, 255, 0.5) !important;')
+
     def test_snippets(self):
         self.assertEqual(expand('@k'), '@keyframes ${1:identifier} {\n\t${2}\n}')
         self.assertEqual(expand('@'), '@media ${1:screen} {\n\t${0}\n}')
