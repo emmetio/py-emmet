@@ -4,6 +4,7 @@ import sys
 sys.path.append('../')
 
 from emmet import expand_stylesheet, parse_stylesheet_snippets, Config
+from emmet.stylesheet import CSSAbbreviationScope
 from emmet.stylesheet.score import calculate_score as score
 
 def field(index: int, placeholder: str, **kwargs):
@@ -28,7 +29,7 @@ def expand(abbr: str, config=default_config):
 
 
 def pick(abbr: str, items: list):
-    items = map(lambda item: { 'item': item, 'score': score(abbr, item) }, items)
+    items = map(lambda item: { 'item': item, 'score': score(abbr, item, True) }, items)
     items = list(filter(lambda item: item['score'] > 0, items))
     items.sort(key=lambda item: item['score'], reverse=True)
 
@@ -139,6 +140,8 @@ class TestStylesheetAbbreviations(unittest.TestCase):
 
     def test_snippets(self):
         self.assertEqual(expand('@k'), '@keyframes ${1:identifier} {\n\t${2}\n}')
+        self.assertEqual(expand('@'), '@media ${1:screen} {\n\t${0}\n}')
+
         # Insert value into snippet fields
         self.assertEqual(expand('@k-name'), '@keyframes name {\n\t${2}\n}')
         self.assertEqual(expand('@k-name10'), '@keyframes name {\n\t10\n}')
@@ -158,15 +161,17 @@ class TestStylesheetAbbreviations(unittest.TestCase):
         self.assertEqual(expand('lg'), 'background-image: linear-gradient(${0});')
         self.assertEqual(expand('lg(to right, #0, #f00.5)'), 'background-image: linear-gradient(to right, #000, rgba(255, 0, 0, 0.5));')
 
-    def test_min_score(self):
-        self.assertEqual(expand('auto', Config({
-            'type': 'stylesheet',
-            'options': { 'stylesheet.fuzzySearchMinScore': 0 }
-        })), 'align-self: unset;')
-        self.assertEqual(expand('auto', Config({
-            'type': 'stylesheet',
-            'options': { 'stylesheet.fuzzySearchMinScore': 0.3 }
-        })), 'auto: ;')
+    # This example is useless: it’s unexpected to receive `align-self: unset`
+    # for `auto` snippet
+    # def test_min_score(self):
+    #     self.assertEqual(expand('auto', Config({
+    #         'type': 'stylesheet',
+    #         'options': { 'stylesheet.fuzzySearchMinScore': 0 }
+    #     })), 'align-self: unset;')
+    #     self.assertEqual(expand('auto', Config({
+    #         'type': 'stylesheet',
+    #         'options': { 'stylesheet.fuzzySearchMinScore': 0.3 }
+    #     })), 'auto: ;')
 
     def test_css_in_js(self):
         config = Config({
@@ -187,3 +192,27 @@ class TestStylesheetAbbreviations(unittest.TestCase):
 
         self.assertEqual(expand('s', config), 'start')
         self.assertEqual(expand('a', config), 'auto')
+
+    def test_limit_snippets_by_scope(self):
+        section_scope = Config({
+            'type': 'stylesheet',
+            'context': { 'name': CSSAbbreviationScope.Section },
+            'snippets': {
+                'mten': 'margin: 10px;',
+                'fsz': 'font-size',
+                'myCenterAwesome': 'body {\n\tdisplay: grid;\n}'
+            }
+        })
+        property_scope = Config({
+            'type': 'stylesheet',
+            'context': { 'name': CSSAbbreviationScope.Property },
+            'snippets': {
+                'mten': 'margin: 10px;',
+                'fsz': 'font-size',
+                'myCenterAwesome': 'body {\n\tdisplay: grid;\n}'
+            }
+        })
+
+        self.assertEqual(expand('m', section_scope), 'body {\n\tdisplay: grid;\n}')
+        self.assertEqual(expand('m', property_scope), 'margin: ;')
+

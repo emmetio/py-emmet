@@ -2,12 +2,26 @@ import re
 from ..css_abbreviation import parse as abbreviation, tokens, CSSValue, CSSProperty, FunctionCall
 from ..config import Config
 from ..list_utils import some, get_item
-from .snippets import create_snippet, nest, CSSSnippetProperty, CSSSnippetRaw
+from .snippets import create_snippet, nest, CSSSnippetProperty, CSSSnippetRaw, CSSSnippetType
 from .score import calculate_score
 from .color import color
 from .format import stringify
 
 gradient_name = 'lg'
+
+class CSSAbbreviationScope:
+    Global = '@@global'
+    "Include all possible snippets in match"
+
+    Section = '@@section'
+    "Include raw snippets only (e.g. no properties) in abbreviation match"
+
+    Property = '@@property'
+    "Include properties only in abbreviation match"
+
+    Value = '@@value'
+    "Resolve abbreviation in context of CSS property value"
+
 
 def parse(abbr: str, config: Config):
     """
@@ -22,10 +36,12 @@ def parse(abbr: str, config: Config):
             config.cache['stylesheet_snippets'] = snippets
 
     if isinstance(abbr, str):
-        abbr = abbreviation(abbr, { 'value': bool(config.context) })
+        abbr = abbreviation(abbr, { 'value': is_value_scope(config) })
+
+    filtered_snippets = get_snippets_for_scope(snippets, config)
 
     for node in abbr:
-        resolve_node(node, snippets, config)
+        resolve_node(node, filtered_snippets, config)
 
     return abbr
 
@@ -43,7 +59,7 @@ def resolve_node(node: CSSProperty, snippets: list, config: Config):
     """
     if not resolve_gradient(node, config):
         score = config.options.get('stylesheet.fuzzySearchMinScore', 0)
-        if config.context:
+        if is_value_scope(config):
             # Resolve as value of given CSS property
             prop_name = config.context.get('name', '')
             snippet = None
@@ -53,7 +69,7 @@ def resolve_node(node: CSSProperty, snippets: list, config: Config):
                     break
             resolve_value_keywords(node, config, snippet, score)
         elif node.name:
-            snippet = find_best_match(node.name, snippets, score)
+            snippet = find_best_match(node.name, snippets, score, True)
 
             if snippet:
                 if isinstance(snippet, CSSSnippetProperty):
@@ -94,29 +110,42 @@ def resolve_gradient(node: CSSProperty, config: Config):
 
 def resolve_as_property(node: CSSProperty, snippet: CSSSnippetProperty, config: Config):
     "Resolves given parsed abbreviation node as CSS property"
+
     abbr = node.name
+
+    # Check for unmatched part of abbreviation
+    # For example, in `dib` abbreviation the matched part is `d` and `ib` should
+    # be considered as inline value. If unmatched fragment exists, we should check
+    # if it matches actual value of snippet. If either explicit value is specified
+    # or unmatched fragment did not resolve to to a keyword, we should consider
+    # matched snippet as invalid
+    inline_value = get_unmatched_part(abbr, snippet.key)
+    if inline_value:
+        if node.value:
+            # Already have value: unmatched part indicates matched snippet is invalid
+            return node
+
+        kw = resolve_keyword(inline_value, config, snippet)
+        if not kw:
+            return node
+
+        node.value.append(CSSValue([kw]))
+
     node.name = snippet.property
 
-    if not node.value:
-        # No value defined in abbreviation node, try to resolve unmatched part
-        # as a keyword alias
-        inline_value = get_unmatched_part(abbr, snippet.key)
-        kw = resolve_keyword(inline_value, config, snippet) if inline_value else None
-        if kw:
-            node.value.append(CSSValue([kw]))
-        elif snippet.value:
-            default_value = snippet.value[0]
-
-            # https://github.com/emmetio/emmet/issues/558
-            # We should auto-select inserted value only if there’s multiple value
-            # choice
-            if len(snippet.value) == 1 or some(has_field, default_value):
-                node.value = default_value
-            else:
-                node.value = list(map(lambda n: wrap_with_field(n, config), default_value))
-    else:
+    if node.value:
         # Replace keyword alias from current abbreviation node with matched keyword
         resolve_value_keywords(node, config, snippet)
+    elif snippet.value:
+        default_value = snippet.value[0]
+
+        # https://github.com/emmetio/emmet/issues/558
+        # We should auto-select inserted value only if there’s multiple value
+        # choice
+        if len(snippet.value) == 1 or some(has_field, default_value):
+            node.value = default_value
+        else:
+            node.value = list(map(lambda n: wrap_with_field(n, config), default_value))
 
     return node
 
@@ -167,7 +196,7 @@ def resolve_as_snippet(node: CSSProperty, snippet: CSSSnippetRaw):
     return node
 
 
-def find_best_match(abbr: str, items: list, min_score=0):
+def find_best_match(abbr: str, items: list, min_score=0, partial_match=False):
     """
     Finds best matching item from `items` array
     :param abbr  Abbreviation to match
@@ -178,7 +207,7 @@ def find_best_match(abbr: str, items: list, min_score=0):
     matched_item = None
 
     for item in items:
-        score = calculate_score(abbr, get_scoring_part(item))
+        score = calculate_score(abbr, get_scoring_part(item), partial_match)
 
         if score == 1:
             # direct hit, no need to look further
@@ -298,3 +327,24 @@ def wrap_with_field(node: CSSValue, config: Config, state: WrapState=None):
             value.append(v)
 
     return CSSValue(value)
+
+def is_value_scope(config: Config):
+    "Check if abbreviation should be expanded in CSS value context"
+    if config.context:
+        return config.context['name'] == CSSAbbreviationScope.Value or not config.context['name'].startswith('@@')
+
+    return False
+
+
+def get_snippets_for_scope(snippets: list, config: Config):
+    "Returns snippets for given scope"
+
+    if config.context:
+        if config.context['name'] == CSSAbbreviationScope.Section:
+            return [s for s in snippets if s.type == CSSSnippetType.Raw]
+
+
+        if config.context['name'] == CSSAbbreviationScope.Property:
+            return [s for s in snippets if s.type == CSSSnippetType.Property]
+
+    return snippets
