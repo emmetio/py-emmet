@@ -4,6 +4,7 @@ import sys
 sys.path.append('../../')
 
 from emmet.css_abbreviation import parse
+from emmet.token_scanner import TokenScannerException
 from .ast import stringify
 
 def expand(abbr: str):
@@ -70,3 +71,7 @@ class TestCSSParser(unittest.TestCase):
         self.assertEqual(len(prop.value[0].value), 1)
         self.assertEqual(fn.type, 'FunctionCall')
         self.assertEqual(fn.name, 'scale3d')
+
+    def test_errors(self):
+        with self.assertRaises(TokenScannerException):
+            expand('p10 ')
