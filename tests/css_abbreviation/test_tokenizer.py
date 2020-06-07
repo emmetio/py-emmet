@@ -123,6 +123,11 @@ class TestScanner(unittest.TestCase):
             { 'type': 'ColorValue', 'r': 17, 'g': 17, 'b': 17, 'a': 1, 'raw': '1', 'start': 1, 'end': 3 }
         ])
 
+        self.assertEqual(json_tokens('c#.'), [
+            { 'type': 'Literal', 'value': 'c', 'start': 0, 'end': 1 },
+            { 'type': 'ColorValue', 'r': 0, 'g': 0, 'b': 0, 'a': 1, 'raw': '.', 'start': 1, 'end': 3 }
+        ])
+
         self.assertEqual(json_tokens('c#f'), [
             { 'type': 'Literal', 'value': 'c', 'start': 0, 'end': 1 },
             { 'type': 'ColorValue', 'r': 255, 'g': 255, 'b': 255, 'a': 1, 'raw': 'f', 'start': 1, 'end': 3 }
@@ -158,6 +163,12 @@ class TestScanner(unittest.TestCase):
         self.assertEqual(json_tokens('c#t'), [
             { 'type': 'Literal', 'value': 'c', 'start': 0, 'end': 1 },
             { 'type': 'ColorValue', 'r': 0, 'g': 0, 'b': 0, 'a': 0, 'raw': 't', 'start': 1, 'end': 3 }
+        ])
+
+        self.assertEqual(json_tokens('c#${fff}'), [
+            { 'type': 'Literal', 'value': 'c', 'start': 0, 'end': 1 },
+            { 'type': 'Literal', 'value': '#', 'start': 1, 'end': 2 },
+            { 'type': 'Field', 'index': None, 'name': 'fff', 'start': 2, 'end': 8 }
         ])
 
     def test_keywords(self):

@@ -172,21 +172,40 @@ def color_value(scanner: Scanner):
     # #0     → #000000
     # #fff.5 → rgba(255, 255, 255, 0.5)
     # #t     → transparent
+
     start = scanner.pos
     if scanner.eat(Chars.Hash):
-        scanner.start = scanner.pos
+        value_start = scanner.pos
+        color = ''
+        alpha = ''
+        if scanner.eat_while(is_hex):
+            color = scanner.substring(value_start, scanner.pos)
+            alpha = color_alpha(scanner)
+        elif scanner.eat(Chars.Transparent):
+            color = '0'
+            alpha = color_alpha(scanner) or '0'
+        else:
+            alpha = color_alpha(scanner)
 
-        scanner.eat(Chars.Transparent) or scanner.eat_while(is_hex)
-        color = scanner.current()
-        alpha = None
+        if color or alpha or scanner.eof():
+            r, g, b, a = parse_color(color, alpha)
+            return tokens.ColorValue(r, g, b, a, scanner.substring(start + 1, scanner.pos), start, scanner.pos)
+        else:
+            # Consumed `#` but no actual value: invalid color value, treat it as literal
+            return create_literal(scanner, start)
 
-        # a hex color can be followed by `.num` alpha value
-        scanner.start = scanner.pos
-        if scanner.eat(Chars.Dot) and scanner.eat_while(is_number):
-            alpha = scanner.current()
+    scanner.pos = start
 
-        r, g, b, a = parse_color(color, alpha)
-        return tokens.ColorValue(r, g, b, a, scanner.substring(start + 1, scanner.pos), start, scanner.pos)
+def color_alpha(scanner: Scanner):
+    "Consumes alpha value of color: `.1`"
+    start = scanner.pos
+    if scanner.eat(Chars.Dot):
+        scanner.start = start
+        if scanner.eat_while(is_number):
+            return scanner.current()
+        return '1'
+
+    return ''
 
 def white_space(scanner: Scanner):
     "Consumes white space characters as string literal from given scanner"

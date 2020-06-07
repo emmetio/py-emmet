@@ -70,9 +70,16 @@ def output_important(node: CSSProperty, out: OutputStream, separator=False):
 
 
 def output_value(value: CSSValue, out: OutputStream, config: Config):
+    prev_end = -1
     for i, token in enumerate(value.value):
-        if i != 0: out.push(' ')
+        # Handle edge case: a field is written close to previous token like this: `foo${bar}`.
+        # We should not add delimiter here
+
+        if i != 0 and (not isinstance(token, tokens.Field) or token.start != prev_end):
+            out.push(' ')
+
         output_token(token, out, config)
+        prev_end = token.end if hasattr(token, 'end') else -1
 
 def output_token(token, out: OutputStream, config: Config):
     if isinstance(token, tokens.ColorValue):

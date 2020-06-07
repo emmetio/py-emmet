@@ -143,6 +143,7 @@ class TestStylesheetAbbreviations(unittest.TestCase):
         self.assertEqual(expand('c#'), 'color: #000;')
         self.assertEqual(expand('c#f.5'), 'color: rgba(255, 255, 255, 0.5);')
         self.assertEqual(expand('c#f.5!'), 'color: rgba(255, 255, 255, 0.5) !important;')
+        self.assertEqual(expand('bgc'), 'background-color: #${1:fff};')
 
     def test_snippets(self):
         self.assertEqual(expand('@k'), '@keyframes ${1:identifier} {\n\t${2}\n}')
@@ -189,6 +190,7 @@ class TestStylesheetAbbreviations(unittest.TestCase):
         })
 
         self.assertEqual(expand('p10+mt10-20', config), 'padding: 10,\nmarginTop: \'10px 20px\',')
+        self.assertEqual(expand('bgc', config), 'backgroundColor: \'#fff\',')
 
     def test_resolve_context_value(self):
         config = Config({
@@ -221,4 +223,3 @@ class TestStylesheetAbbreviations(unittest.TestCase):
 
         self.assertEqual(expand('m', section_scope), 'body {\n\tdisplay: grid;\n}')
         self.assertEqual(expand('m', property_scope), 'margin: ;')
-
