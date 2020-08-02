@@ -19,12 +19,14 @@ class CSSValue:
 
 
 class CSSProperty:
-    __slots__ = ('name', 'value', 'important')
+    __slots__ = ('name', 'value', 'important', 'snippet')
 
     def __init__(self, name: str, value: list, important=False):
         self.name = name
         self.value = value
         self.important = important
+        self.snippet = None
+        "Snippet matched with current property"
 
 def parser(token_list: list, options={}):
     scanner = TokenScanner(token_list)

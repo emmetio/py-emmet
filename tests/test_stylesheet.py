@@ -222,4 +222,5 @@ class TestStylesheetAbbreviations(unittest.TestCase):
         })
 
         self.assertEqual(expand('m', section_scope), 'body {\n\tdisplay: grid;\n}')
+        self.assertEqual(expand('b', section_scope), '')
         self.assertEqual(expand('m', property_scope), 'margin: ;')

@@ -6,21 +6,9 @@ from .snippets import create_snippet, nest, CSSSnippetProperty, CSSSnippetRaw, C
 from .score import calculate_score
 from .color import color
 from .format import stringify
+from .scope import CSSAbbreviationScope
 
 gradient_name = 'lg'
-
-class CSSAbbreviationScope:
-    Global = '@@global'
-    "Include all possible snippets in match"
-
-    Section = '@@section'
-    "Include raw snippets only (e.g. no properties) in abbreviation match"
-
-    Property = '@@property'
-    "Include properties only in abbreviation match"
-
-    Value = '@@value'
-    "Resolve abbreviation in context of CSS property value"
 
 
 def parse(abbr: str, config: Config):
@@ -68,8 +56,10 @@ def resolve_node(node: CSSProperty, snippets: list, config: Config):
                     snippet = s
                     break
             resolve_value_keywords(node, config, snippet, score)
+            node.snippet = snippet
         elif node.name:
             snippet = find_best_match(node.name, snippets, score, True)
+            node.snippet = snippet
 
             if snippet:
                 if isinstance(snippet, CSSSnippetProperty):

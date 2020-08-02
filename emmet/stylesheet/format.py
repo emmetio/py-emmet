@@ -4,10 +4,16 @@ from ..css_abbreviation.tokenizer import tokens
 from ..output_stream import OutputStream
 from ..config import Config
 from .color import color, frac
+from .scope import CSSAbbreviationScope
+
 
 def stringify(abbr: list, config: Config):
     out = OutputStream(config.options)
     fmt = config.options.get('output.format')
+
+    if config.context and config.context['name'] == CSSAbbreviationScope.Section:
+        # For section context, filter out unmatched snippets
+        abbr = [node for node in abbr if node.snippet is not None]
 
     for i, prop in enumerate(abbr):
         if fmt and i != 0:
