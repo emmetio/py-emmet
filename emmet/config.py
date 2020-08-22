@@ -61,7 +61,8 @@ DEFAULT_OPTIONS = {
     'stylesheet.unitAliases': { 'e': 'em', 'p': '%', 'x': 'ex', 'r': 'rem' },
     'stylesheet.json': False,
     'stylesheet.jsonDoubleQuotes': False,
-    'stylesheet.fuzzySearchMinScore': 0
+    'stylesheet.fuzzySearchMinScore': 0,
+    'stylesheet.skipUnmatched': True,
 }
 
 DEFAULT_CONFIG = {

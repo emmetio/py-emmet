@@ -11,9 +11,9 @@ def stringify(abbr: list, config: Config):
     out = OutputStream(config.options)
     fmt = config.options.get('output.format')
 
-    if config.context and config.context['name'] == CSSAbbreviationScope.Section:
-        # For section context, filter out unmatched snippets
-        abbr = [node for node in abbr if node.snippet is not None]
+    if config.options.get('stylesheet.skipUnmatched'):
+        # Filter out unmatched snippets
+        abbr = [node for node in abbr if node.snippet is not None or node.important]
 
     for i, prop in enumerate(abbr):
         if fmt and i != 0:

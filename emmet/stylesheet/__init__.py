@@ -120,6 +120,8 @@ def resolve_as_property(node: CSSProperty, snippet: CSSSnippetProperty, config: 
 
         kw = resolve_keyword(inline_value, config, snippet)
         if not kw:
+            if config.options.get('stylesheet.skipUnmatched'):
+                node.snippet = None
             return node
 
         node.value.append(CSSValue([kw]))
