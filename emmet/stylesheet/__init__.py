@@ -92,6 +92,7 @@ def resolve_gradient(node: CSSProperty, config: Config):
         if not config.context:
             node.name = 'background-image'
         node.value = [CSSValue([gradient_fn])]
+        node.snippet = True
 
         return True
 
@@ -110,6 +111,8 @@ def resolve_as_property(node: CSSProperty, snippet: CSSSnippetProperty, config: 
     # or unmatched fragment did not resolve to to a keyword, we should consider
     # matched snippet as invalid
     inline_value = get_unmatched_part(abbr, snippet.key)
+    node.name = snippet.property
+
     if inline_value:
         if node.value:
             # Already have value: unmatched part indicates matched snippet is invalid
@@ -120,8 +123,6 @@ def resolve_as_property(node: CSSProperty, snippet: CSSSnippetProperty, config: 
             return node
 
         node.value.append(CSSValue([kw]))
-
-    node.name = snippet.property
 
     if node.value:
         # Replace keyword alias from current abbreviation node with matched keyword
