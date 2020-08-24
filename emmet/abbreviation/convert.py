@@ -5,11 +5,17 @@ from .stringify import stringify
 
 class ConvertState:
     __slots__ = ('inserted', 'text', 'repeat_guard', 'repeaters', 'variables',
-                 '_text_inserted')
+                 '_text_inserted', 'clean_text')
 
     def __init__(self, text: str = None, variables={}, max_repeat=None):
         self.inserted = False
         self.text = text
+
+        if isinstance(text, list):
+            self.clean_text = [l for l in text if l.strip()]
+        else:
+            self.clean_text = text
+
         self.repeat_guard = max_repeat if max_repeat is not None else 1000000
         self.variables = variables
         self.repeaters = []
@@ -18,6 +24,9 @@ class ConvertState:
     def get_text(self, pos: int):
         self._text_inserted = True
         if isinstance(self.text, list):
+            if pos is not None and pos >= 0 and pos < len(self.clean_text):
+                return self.clean_text[pos]
+
             value = self.text[pos] if pos is not None else '\n'.join(self.text)
         else:
             value = self.text or ''
@@ -94,7 +103,7 @@ def convert_statement(node: TokenElement, state: ConvertState):
         repeat = clone_repeater(node.repeat)
 
         if repeat.implicit and isinstance(state.text, list):
-            repeat.count = len(state.text)
+            repeat.count = len(state.clean_text)
         else:
             repeat.count = repeat.count or 1
 

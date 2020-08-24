@@ -19,6 +19,12 @@ class TestExpandMarkup(unittest.TestCase):
         # insert text into abbreviation
         self.assertEqual(expand('ul>.item$*', { 'text': ['foo', 'bar'] }), '<ul>\n\t<li class="item1">foo</li>\n\t<li class="item2">bar</li>\n</ul>')
 
+        # Wrap with Abbreviation, skip empty lines
+        self.assertEqual(
+            expand('ul>.item$*', {'text': ['foo', '', 'bar', '', '']}),
+            '<ul>\n\t<li class="item1">foo</li>\n\t<li class="item2">bar</li>\n</ul>'
+        )
+
         # insert TextMate-style fields/tabstops in output
         self.assertEqual(expand('ul>.item$*2', {
             'options': {
