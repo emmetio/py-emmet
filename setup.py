@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="py-emmet",
-    version="1.1.4",
+    version="1.1.5",
     author="Sergey Chikuyonok",
     author_email="serge.che@gmail.com",
     description="Emmet is a web-developer’s toolkit for boosting HTML & CSS code writing.",
