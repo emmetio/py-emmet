@@ -41,4 +41,4 @@ def to_short_hex(num: int):
     return format(num >> 4, 'x')
 
 def to_hex(num: int):
-    return format(num >> 4, 'x').ljust(2, '0')
+    return format(num, 'x').ljust(2, '0')

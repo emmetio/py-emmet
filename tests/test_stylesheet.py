@@ -144,6 +144,8 @@ class TestStylesheetAbbreviations(unittest.TestCase):
         self.assertEqual(expand('c#f.5'), 'color: rgba(255, 255, 255, 0.5);')
         self.assertEqual(expand('c#f.5!'), 'color: rgba(255, 255, 255, 0.5) !important;')
         self.assertEqual(expand('bgc'), 'background-color: #${1:fff};')
+        self.assertEqual(expand('bgc#f0'), 'background-color: #f0f0f0;')
+        self.assertEqual(expand('bgc#f1'), 'background-color: #f1f1f1;')
 
     def test_snippets(self):
         self.assertEqual(expand('@k'), '@keyframes ${1:identifier} {\n\t${2}\n}')
