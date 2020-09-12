@@ -110,6 +110,9 @@ class TestExpandMarkup(unittest.TestCase):
         self.assertEqual(expand('div.{theme.style}', config), '<div className={theme.style}></div>')
 
     def test_wrap_with_abbreviation(self):
+        self.assertEqual(
+            expand('img[src="$#"]*', {'text': ['foo.jpg', 'bar.jpg']}),
+            '<img src="foo.jpg" alt=""><img src="bar.jpg" alt="">')
         self.assertEqual(expand('div>ul', { 'text': ['<div>line1</div>\n<div>line2</div>'] }),
             '<div>\n\t<ul>\n\t\t<div>line1</div>\n\t\t<div>line2</div>\n\t</ul>\n</div>')
 

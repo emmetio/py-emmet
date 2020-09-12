@@ -22,9 +22,11 @@ def parse(abbr: str, config: Config):
     Parses given Emmet abbreviation into a final abbreviation tree with all
     required transformations applied
     """
+
+    text = config.get('text')
     if isinstance(abbr, str):
         abbr = abbreviation(abbr, {
-            'text': config.get('text'),
+            'text': text,
             'variables': config.variables,
             'max_repeat': config.get('maxRepeat') or config.get('max_repeat'),
             'jsx': bool(config.options.get('jsx.enabled'))
@@ -34,8 +36,13 @@ def parse(abbr: str, config: Config):
     # 1. Map each node to snippets, which are abbreviations as well. A single snippet
     # may produce multiple nodes
     # 2. Transform every resolved node
+    # In case if config contains text, temporary remove it from config
+    if text:
+        config.user_config['text'] = None
+
     snippets(abbr, config)
     walk(abbr, transform, config)
+    config.user_config['text'] = text
     return abbr
 
 def stringify(abbr: Abbreviation, config: Config):
