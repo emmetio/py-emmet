@@ -54,6 +54,12 @@ class TestExpandMarkup(unittest.TestCase):
         self.assertEqual(expand('test[foo]', reverse), '<test bar="bar" baz={}></test>')
         self.assertEqual(expand('test[baz=a foo=1]', reverse), '<test baz={a} foo="1" bar="bar"></test>')
 
+    def test_expressions(self):
+        self.assertEqual(expand('span{{foo}}'), '<span>{foo}</span>')
+        self.assertEqual(expand('span{foo}'), '<span>foo</span>')
+        self.assertEqual(expand('span[foo={bar}]'), '<span foo={bar}></span>')
+        self.assertEqual(expand('span[foo={{bar}}]'), '<span foo={{bar}}></span>')
+
     def test_numbering(self):
         self.assertEqual(expand('ul>li.item$@-*5'), '<ul>\n\t<li class="item5"></li>\n\t<li class="item4"></li>\n\t<li class="item3"></li>\n\t<li class="item2"></li>\n\t<li class="item1"></li>\n</ul>')
 

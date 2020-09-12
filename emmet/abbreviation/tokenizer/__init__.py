@@ -66,8 +66,14 @@ def literal(scanner: Scanner, ctx: dict):
             # 3. Depending on context, some characters should be treated as operators
             break
 
-        if ctx['expression'] and ch == Chars.CurlyBracketClose:
-            break
+        if ctx['expression']:
+            if ch == Chars.CurlyBracketOpen:
+                # Handle nested curly braces inside expressions, e.g. `span{{foo}}`
+                ctx['expression'] += 1
+            elif ch == Chars.CurlyBracketClose:
+                if ctx['expression'] == 1:
+                    break;
+                ctx['expression'] -= 1
 
         if not ctx['quote'] and not ctx['expression']:
             # Consuming element name
