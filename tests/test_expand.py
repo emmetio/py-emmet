@@ -116,6 +116,15 @@ class TestExpandMarkup(unittest.TestCase):
         self.assertEqual(expand('div>ul', { 'text': ['<div>line1</div>\n<div>line2</div>'] }),
             '<div>\n\t<ul>\n\t\t<div>line1</div>\n\t\t<div>line2</div>\n\t</ul>\n</div>')
 
+        self.assertEqual(expand('a', {'text': 'foo'}), '<a href="">foo</a>')
+        self.assertEqual(expand('a', {'text': 'emmet//io'}), '<a href="">emmet//io</a>')
+        self.assertEqual(expand('a', {'text': 'http://emmet.io'}), '<a href="http://emmet.io">http://emmet.io</a>')
+        self.assertEqual(expand('a', {'text': '//emmet.io'}), '<a href="//emmet.io">//emmet.io</a>')
+        self.assertEqual(expand('a', {'text': 'www.emmet.io'}), '<a href="http://www.emmet.io">www.emmet.io</a>')
+        self.assertEqual(expand('a', {'text': 'emmet.io'}), '<a href="">emmet.io</a>')
+        self.assertEqual(expand('a', {'text': 'info@emmet.io'}), '<a href="mailto:info@emmet.io">info@emmet.io</a>')
+
+
 class TestExpandPug(unittest.TestCase):
     def test_basics(self):
         self.assertEqual(expand('!', { 'syntax': 'pug' }),

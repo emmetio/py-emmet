@@ -1,7 +1,11 @@
+import re
 from .parser import TokenGroup, TokenElement, TokenAttribute, is_quote, is_bracket
 from .tokenizer import tokens
 from .stringify import stringify
 
+# re_url = re.compile(r'^(?:(?:https?|ftp|file)://|www\.|ftp\.)(?:\([-A-Z0-9+&@#/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#/%=~_|$?!:,.]*\)|[A-Z0-9+&@#/%=~_|$])')
+re_url = re.compile(r'(https?:|ftp:|file:)?\/\/|(www|ftp)\.')
+re_email = re.compile(r'[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,5}$')
 
 class ConvertState:
     __slots__ = ('inserted', 'text', 'repeat_guard', 'repeaters', 'variables',
@@ -60,7 +64,7 @@ class AbbreviationNode:
 class AbbreviationAttribute:
     __slots__ = ('name', 'value', 'value_type', 'boolean', 'implied')
 
-    def __init__(self, name: str, value: list, value_type: str, boolean=False, implied=False):
+    def __init__(self, name: str, value: list, value_type='raw', boolean=False, implied=False):
         self.name = name
         self.value = value
         self.value_type = value_type
@@ -89,6 +93,10 @@ def convert(abbr: TokenGroup, options={}):
         if deepest:
             tx = '\n'.join(text) if isinstance(text, list) else text or ''
             insert_text(deepest, tx)
+            if deepest.name == 'a':
+                # Automatically update value of `<a>` element if inserting URL or email
+                insert_href(deepest, tx)
+
 
     return result
 
@@ -265,6 +273,30 @@ def insert_text(node: AbbreviationNode, text: str):
             node.value.append(text)
     else:
         node.value = [text]
+
+
+def insert_href(node: AbbreviationNode, text: str):
+    href = None
+    if re_url.match(text):
+        href = text
+        if not re.match(r'\w+:', href) and not href.startswith('//'):
+            href = 'http://%s' % href
+    elif re_email.match(text):
+        href = 'mailto:%s' % text
+
+    if href:
+        href_attr = None
+        if node.attributes:
+            for attr in node.attributes:
+                if attr.name == 'href':
+                    href_attr = attr
+                    break
+
+        if not href_attr:
+            node.attributes = [AbbreviationAttribute('href', href)]
+        elif not href_attr.value:
+            href_attr.value = href
+
 
 def attach_repeater(items: list, repeater: tokens.Repeater):
     for item in items:
