@@ -29,7 +29,7 @@ class ConvertState:
         self._text_inserted = True
         if isinstance(self.text, list):
             if pos is not None and pos >= 0 and pos < len(self.clean_text):
-                return self.clean_text[pos]
+                return self.clean_text[pos].strip()
 
             value = self.text[pos] if pos is not None else '\n'.join(self.text)
         else:
@@ -91,7 +91,7 @@ def convert(abbr: TokenGroup, options={}):
         # Text given but no implicitly repeated elements: insert it into deepest child
         deepest = deepest_node(result.children[-1])
         if deepest:
-            tx = '\n'.join(text) if isinstance(text, list) else text or ''
+            tx = '\n'.join(text) if isinstance(text, list) else text.strip() or ''
             insert_text(deepest, tx)
             if deepest.name == 'a':
                 # Automatically update value of `<a>` element if inserting URL or email
