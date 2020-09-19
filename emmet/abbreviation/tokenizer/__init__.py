@@ -60,6 +60,14 @@ def literal(scanner: Scanner, ctx: dict):
 
         ch = scanner.peek()
 
+        if ch == '/' and not ctx['quote'] and not ctx['expression'] and not ctx['attribute']:
+            # Special case for `/` character between numbers in class names
+            prev = scanner.string[scanner.pos - 1] if scanner.pos > 0 else ''
+            next = scanner.string[scanner.pos + 1] if scanner.pos < scanner.end - 1 else ''
+            if prev.isdigit() and next.isdigit():
+                value.append(scanner.next())
+                continue
+
         if ch == ctx['quote'] or ch == Chars.Dollar or is_allowed_operator(ch, ctx):
             # 1. Found matching quote
             # 2. The `$` character has special meaning in every context

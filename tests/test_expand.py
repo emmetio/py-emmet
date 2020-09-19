@@ -124,6 +124,11 @@ class TestExpandMarkup(unittest.TestCase):
         self.assertEqual(expand('a', {'text': 'emmet.io'}), '<a href="">emmet.io</a>')
         self.assertEqual(expand('a', {'text': 'info@emmet.io'}), '<a href="mailto:info@emmet.io">info@emmet.io</a>')
 
+    def test_class_names(self):
+        self.assertEqual(expand('div.foo/'), '<div class="foo">')
+        self.assertEqual(expand('div.foo1/2'), '<div class="foo1/2"></div>')
+        self.assertEqual(expand('div.foo.1/2'), '<div class="foo 1/2"></div>')
+
 
 class TestExpandPug(unittest.TestCase):
     def test_basics(self):
