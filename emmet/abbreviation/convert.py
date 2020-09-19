@@ -3,7 +3,6 @@ from .parser import TokenGroup, TokenElement, TokenAttribute, is_quote, is_brack
 from .tokenizer import tokens
 from .stringify import stringify
 
-# re_url = re.compile(r'^(?:(?:https?|ftp|file)://|www\.|ftp\.)(?:\([-A-Z0-9+&@#/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#/%=~_|$?!:,.]*\)|[A-Z0-9+&@#/%=~_|$])')
 re_url = re.compile(r'(https?:|ftp:|file:)?\/\/|(www|ftp)\.')
 re_email = re.compile(r'[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,5}$')
 
@@ -80,10 +79,11 @@ class AbbreviationAttribute:
         return AbbreviationAttribute(self.name, self.value, self.value_type, self.boolean, self.implied)
 
 
-def convert(abbr: TokenGroup, options={}):
+def convert(abbr: TokenGroup, params={}):
     "Converts given token-based abbreviation into simplified and unrolled node-based abbreviation"
-    text = options.get('text')
-    state = ConvertState(text, options.get('variables'), options.get('max_repeat'))
+    text = params.get('text')
+    options = params.get('options') or {}
+    state = ConvertState(text, params.get('variables'), params.get('max_repeat'))
     result = Abbreviation()
     result.children = convert_group(abbr, state)
 
@@ -91,9 +91,9 @@ def convert(abbr: TokenGroup, options={}):
         # Text given but no implicitly repeated elements: insert it into deepest child
         deepest = deepest_node(result.children[-1])
         if deepest:
-            tx = '\n'.join(text) if isinstance(text, list) else text.strip() or ''
+            tx = '\n'.join(text).strip() if isinstance(text, list) else text.strip() or ''
             insert_text(deepest, tx)
-            if deepest.name == 'a':
+            if deepest.name == 'a' and options.get('markup.href'):
                 # Automatically update value of `<a>` element if inserting URL or email
                 insert_href(deepest, tx)
 
@@ -246,7 +246,7 @@ def stringify_value(token_list: list, state: ConvertState):
             accum.append(stringify(token, state))
 
 
-    if (accum):
+    if accum:
         result.append(''.join(accum))
 
     return result

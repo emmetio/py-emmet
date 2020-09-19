@@ -40,6 +40,8 @@ DEFAULT_OPTIONS = {
     'output.field': lambda index, placeholder, **kwargs: placeholder,
     'output.text': lambda text, **kwargs: text,
 
+    'markup.href': True,
+
     'comment.enabled': False,
     'comment.trigger': ['id', 'class'],
     'comment.before': '',
