@@ -28,6 +28,7 @@ def parse(abbr: str, config: Config):
         abbr = abbreviation(abbr, {
             'text': text,
             'variables': config.variables,
+            'options': config.options,
             'max_repeat': config.get('maxRepeat') or config.get('max_repeat'),
             'jsx': bool(config.options.get('jsx.enabled'))
         })

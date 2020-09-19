@@ -1,3 +1,4 @@
+import re
 from .walk import walk, WalkState
 from .utils import caret, is_inline_element, is_snippet, push_tokens, should_output_attribute
 from .comment import comment_node_before, comment_node_after, CommentWalkState
@@ -6,6 +7,8 @@ from ...abbreviation.tokenizer.tokens import Field
 from ...config import Config
 from ...output_stream import tag_name, self_close, attr_name, is_boolean_attribute, attr_quote, is_inline
 from ...list_utils import some, find_index, get_item
+
+re_html_tag = re.compile(r'<([\w\-:]+)[\s>]')
 
 class HTMLWalkState(WalkState):
     __slots__ = ('comment')
@@ -46,7 +49,7 @@ def element(node: AbbreviationNode, index: int, items: list, state: HTMLWalkStat
 
             if not push_snippet(node, state, walk_next):
                 if node.value:
-                    inner_format = some(has_newline, node.value)
+                    inner_format = some(has_newline, node.value) or starts_with_block_tag(node.value, config)
                     if inner_format:
                         out.level += 1
                         out.push_newline(out.level)
@@ -212,6 +215,15 @@ def has_newline(value):
     return '\r' in value or '\n' in value if isinstance(value, str) else False
 
 
+def starts_with_block_tag(value: list, config: Config) -> bool:
+    "Check if given node value starts with block-level tag"
+    if value and isinstance(value[0], str):
+        m = re_html_tag.match(value[0])
+
+        if m and m.group(1).lower() not in config.options.get('inlineElements'):
+            return True
+
+    return False
 
 def _next(items: list, walk_next: callable):
     for i, item in enumerate(items):
