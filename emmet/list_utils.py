@@ -2,9 +2,10 @@ __doc__ = "Utility methods for lists"
 
 def some(fn: callable, items: list):
     "Tests whether at least one element in the array passes the test implemented by the provided function. It returns a `bool` value."
-    for item in items:
-        if fn(item):
-            return True
+    if items:
+        for item in items:
+            if fn(item):
+                return True
     return False
 
 
