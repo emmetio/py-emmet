@@ -4,7 +4,7 @@ from .tokenizer import tokens
 from .stringify import stringify
 
 re_url = re.compile(r'(https?:|ftp:|file:)?\/\/|(www|ftp)\.')
-re_email = re.compile(r'[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,5}$')
+re_email = re.compile(r'[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,5}$', re.I)
 
 class ConvertState:
     __slots__ = ('inserted', 'text', 'repeat_guard', 'repeaters', 'variables',

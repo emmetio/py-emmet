@@ -123,6 +123,7 @@ class TestExpandMarkup(unittest.TestCase):
         self.assertEqual(expand('a', {'text': 'www.emmet.io'}), '<a href="http://www.emmet.io">www.emmet.io</a>')
         self.assertEqual(expand('a', {'text': 'emmet.io'}), '<a href="">emmet.io</a>')
         self.assertEqual(expand('a', {'text': 'info@emmet.io'}), '<a href="mailto:info@emmet.io">info@emmet.io</a>')
+        self.assertEqual(expand('a', {'text': 'uSeR@myLongDomainName.com'}), '<a href="mailto:uSeR@myLongDomainName.com">uSeR@myLongDomainName.com</a>')
 
         self.assertEqual(expand('p', {'text': 'foo\nbar'}), '<p>\n\tfoo\n\tbar\n</p>')
         self.assertEqual(expand('p', {'text': '<div>foo</div>'}), '<p>\n\t<div>foo</div>\n</p>')
