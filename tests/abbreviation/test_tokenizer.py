@@ -24,7 +24,7 @@ class TestScanner(unittest.TestCase):
             { 'type': 'Quote', 'single': False, 'start': 9, 'end': 10 },
             { 'type': 'Literal', 'value': 'foo+bar\'str\'', 'start': 10, 'end': 22 },
             { 'type': 'Quote', 'single': False, 'start': 22, 'end': 23 },
-            { 'type': 'WhiteSpace', 'start': 23, 'end': 24 },
+            { 'type': 'WhiteSpace', 'start': 23, 'end': 24, 'value': ' ' },
             { 'type': 'Bracket', 'open': True, 'context': 'group', 'start': 24, 'end': 25 },
             { 'type': 'Literal', 'value': 'attr', 'start': 25, 'end': 29 },
             { 'type': 'Bracket', 'open': False, 'context': 'group', 'start': 29, 'end': 30 },

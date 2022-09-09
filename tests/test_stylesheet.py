@@ -19,7 +19,8 @@ default_config = Config({
     },
     'snippets': {
         'mten': 'margin: 10px;',
-        'fsz': 'font-size'
+        'fsz': 'font-size',
+        'gt': 'grid-template: repeat(2,auto) / repeat(auto-fit, minmax(250px, 1fr))'
     },
     'cache': {}
 })
@@ -91,6 +92,16 @@ class TestStylesheetAbbreviations(unittest.TestCase):
 
         self.assertEqual(expand('trf-trs'), 'transform: translate(${1:x}, ${2:y});')
 
+        # https://github.com/emmetio/emmet/issues/647
+        self.assertEqual(expand('gtc'), 'grid-template-columns: repeat(${0});')
+        self.assertEqual(expand('gtr'), 'grid-template-rows: repeat(${0});')
+
+        self.assertEqual(expand('lis:n'), 'list-style: none;');
+        self.assertEqual(expand('list:n'), 'list-style-type: none;');
+        self.assertEqual(expand('bdt:n'), 'border-top: none;');
+        self.assertEqual(expand('bgi:n'), 'background-image: none;');
+        self.assertEqual(expand('q:n'), 'quotes: none;');
+
     def test_numeric(self):
         self.assertEqual(expand('p0'), 'padding: 0;', 'No unit for 0')
         self.assertEqual(expand('p10'), 'padding: 10px;', '`px` unit for integers')
@@ -111,6 +122,14 @@ class TestStylesheetAbbreviations(unittest.TestCase):
 
         # https://github.com/emmetio/emmet/issues/558
         self.assertEqual(expand('us'), 'user-select: none;')
+
+        # https://github.com/emmetio/emmet/issues/558
+        self.assertEqual(expand('us'), 'user-select: none;');
+
+        # https://github.com/microsoft/vscode/issues/105697
+        self.assertEqual(expand('opa1'), 'opacity: 1;', 'Unitless property');
+        self.assertEqual(expand('opa.1'), 'opacity: 0.1;', 'Unitless property');
+        self.assertEqual(expand('opa.a'), 'opacity: .a;', 'Unitless property');
 
     def test_numeric_with_format(self):
         config = Config({
@@ -154,6 +173,7 @@ class TestStylesheetAbbreviations(unittest.TestCase):
         # Insert value into snippet fields
         self.assertEqual(expand('@k-name'), '@keyframes name {\n\t${2}\n}')
         self.assertEqual(expand('@k-name10'), '@keyframes name {\n\t10\n}')
+        self.assertEqual(expand('gt'), 'grid-template: repeat(2, auto) / repeat(auto-fit, minmax(250px, 1fr));')
 
     def test_multiple_properties(self):
         self.assertEqual(expand('p10+m10-20'), 'padding: 10px;\nmargin: 10px 20px;')

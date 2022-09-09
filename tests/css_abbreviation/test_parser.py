@@ -72,6 +72,9 @@ class TestCSSParser(unittest.TestCase):
         self.assertEqual(fn.type, 'FunctionCall')
         self.assertEqual(fn.name, 'scale3d')
 
+        prop = parse('repeat(2,auto) / repeat(auto-fit, minmax(250px, 1fr))', opt)[0];
+        self.assertEqual(len(prop.value), 1)
+
     def test_errors(self):
         with self.assertRaises(TokenScannerException):
             expand('p10 ')

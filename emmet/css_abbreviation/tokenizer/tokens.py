@@ -32,6 +32,7 @@ class Chars:
     SingleQuote = "'"
     DoubleQuote = '"'
     Transparent = 't'
+    Slash = '/'
 
 class OperatorType:
     Sibling = '+'

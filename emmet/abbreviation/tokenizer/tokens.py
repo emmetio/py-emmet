@@ -77,4 +77,9 @@ class Literal(Token):
         super(Literal, self).__init__(*args)
         self.value = value
 
-class WhiteSpace(Token): pass
+class WhiteSpace(Token):
+    __slots__ = ('value',)
+
+    def __init__(self, value: str, *args):
+        super(WhiteSpace, self).__init__(*args)
+        self.value = value

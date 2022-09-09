@@ -128,6 +128,29 @@ class TestExpandMarkup(unittest.TestCase):
         self.assertEqual(expand('p', {'text': 'foo\nbar'}), '<p>\n\tfoo\n\tbar\n</p>')
         self.assertEqual(expand('p', {'text': '<div>foo</div>'}), '<p>\n\t<div>foo</div>\n</p>')
 
+        self.assertEqual(expand('a', { 'text': 'https://www.google.it' }), '<a href="https://www.google.it">https://www.google.it</a>')
+        self.assertEqual(expand('a', { 'text': 'www.google.it' }), '<a href="http://www.google.it">www.google.it</a>')
+        self.assertEqual(expand('a', { 'text': 'google.it' }), '<a href="">google.it</a>')
+        self.assertEqual(expand('a', { 'text': 'test here' }), '<a href="">test here</a>')
+        self.assertEqual(expand('a', { 'text': 'test@domain.com' }), '<a href="mailto:test@domain.com">test@domain.com</a>')
+        self.assertEqual(expand('a', { 'text': 'test here test@domain.com' }), '<a href="">test here test@domain.com</a>')
+        self.assertEqual(expand('a', { 'text': 'test here www.domain.com' }), '<a href="">test here www.domain.com</a>')
+
+        self.assertEqual(expand('a[href=]', { 'text': 'https://www.google.it' }), '<a href="https://www.google.it">https://www.google.it</a>')
+        self.assertEqual(expand('a[href=]', { 'text': 'www.google.it' }), '<a href="http://www.google.it">www.google.it</a>')
+        self.assertEqual(expand('a[href=]', { 'text': 'google.it' }), '<a href="">google.it</a>')
+        self.assertEqual(expand('a[href=]', { 'text': 'test here' }), '<a href="">test here</a>')
+        self.assertEqual(expand('a[href=]', { 'text': 'test@domain.com' }), '<a href="mailto:test@domain.com">test@domain.com</a>')
+        self.assertEqual(expand('a[href=]', { 'text': 'test here test@domain.com' }), '<a href="">test here test@domain.com</a>')
+        self.assertEqual(expand('a[href=]', { 'text': 'test here www.domain.com' }), '<a href="">test here www.domain.com</a>')
+        self.assertEqual(expand('a[class=here]', { 'text': 'test@domain.com' }), '<a href="mailto:test@domain.com" class="here">test@domain.com</a>')
+        self.assertEqual(expand('a.here', { 'text': 'www.domain.com' }), '<a href="http://www.domain.com" class="here">www.domain.com</a>')
+        self.assertEqual(expand('a[class=here]', { 'text': 'test here test@domain.com' }), '<a href="" class="here">test here test@domain.com</a>')
+        self.assertEqual(expand('a.here', { 'text': 'test here www.domain.com' }), '<a href="" class="here">test here www.domain.com</a>')
+
+        self.assertEqual(expand('a[href="www.google.it"]', { 'text': 'test' }), '<a href="www.google.it">test</a>')
+        self.assertEqual(expand('a[href="www.example.com"]', { 'text': 'www.google.it' }), '<a href="www.example.com">www.google.it</a>')
+
     def test_class_names(self):
         self.assertEqual(expand('div.foo/'), '<div class="foo">')
         self.assertEqual(expand('div.foo1/2'), '<div class="foo1/2"></div>')

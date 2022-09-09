@@ -269,7 +269,7 @@ def is_bracket(ch: str):
     return ch in (Chars.RoundBracketOpen, Chars.RoundBracketClose)
 
 def is_literal(ch: str):
-    return is_alpha_word(ch) or ch == Chars.Percent
+    return is_alpha_word(ch) or ch == Chars.Percent or ch == Chars.Slash
 
 def parse_color(value: str, alpha=None):
     r = '0'

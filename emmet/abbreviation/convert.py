@@ -293,7 +293,11 @@ def insert_href(node: AbbreviationNode, text: str):
                     break
 
         if not href_attr:
-            node.attributes = [AbbreviationAttribute('href', href)]
+            href_attr = AbbreviationAttribute('href', href)
+            if node.attributes:
+                node.attributes.append(href_attr)
+            else:
+                node.attributes = [href_attr]
         elif not href_attr.value:
             href_attr.value = href
 

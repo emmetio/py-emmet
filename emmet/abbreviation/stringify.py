@@ -91,5 +91,5 @@ def RepeaterNumber(token: tokens.RepeaterNumber, state):
     return prefix + result
 
 
-def WhiteSpace(token, state):
-    return ' '
+def WhiteSpace(token: tokens.WhiteSpace, state):
+    return token.value

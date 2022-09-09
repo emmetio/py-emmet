@@ -106,7 +106,7 @@ def white_space(scanner: Scanner):
     "Consumes white space characters as string literal from given scanner"
     start = scanner.pos
     if scanner.eat_while(is_space):
-        return tokens.WhiteSpace(start, scanner.pos)
+        return tokens.WhiteSpace(scanner.substring(start, scanner.pos), start, scanner.pos)
 
 
 def quote(scanner: Scanner):
