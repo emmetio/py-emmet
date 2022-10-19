@@ -103,7 +103,7 @@ class TestAbbreviationParser(unittest.TestCase):
         self.assertEqual(string('#'), '<? id></?>')
         self.assertEqual(string('#.'), '<? id class></?>')
         self.assertEqual(string('.#.'), '<? class id class></?>')
-        self.assertEqual(string('.a..'), '<? class=a class class></?>')
+        self.assertEqual(string('.a..'), '<? class=a class></?>')
 
         # Elements with attributes
         self.assertEqual(string('div[foo=bar]'), '<div foo=bar></div>')

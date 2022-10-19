@@ -109,6 +109,15 @@ class TestExpandMarkup(unittest.TestCase):
         self.assertEqual(expand('Foo.Bar', config), '<Foo.Bar></Foo.Bar>')
         self.assertEqual(expand('div.{theme.style}', config), '<div className={theme.style}></div>')
 
+    def test_override_attributes(self):
+        config = { 'syntax': 'jsx' }
+        self.assertEqual(expand('.bar', config), '<div className="bar"></div>');
+        self.assertEqual(expand('..bar', config), '<div styleName={styles.bar}></div>')
+        self.assertEqual(expand('..foo-bar', config), '<div styleName={styles[\'foo-bar\']}></div>')
+
+        self.assertEqual(expand('.foo', { 'syntax': 'vue' }), '<div class="foo"></div>')
+        self.assertEqual(expand('..foo', { 'syntax': 'vue' }), '<div :class="foo"></div>')
+
     def test_wrap_with_abbreviation(self):
         self.assertEqual(
             expand('img[src="$#"]*', {'text': ['foo.jpg', 'bar.jpg']}),

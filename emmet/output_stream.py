@@ -1,6 +1,9 @@
 from .config import Config
 from .abbreviation.convert import AbbreviationAttribute, AbbreviationNode
 
+expression_start = '{'
+expression_end = '}'
+
 class OutputStream:
     __slots__ = ('options', '_value', 'level', 'offset', 'line', 'column')
 
@@ -75,7 +78,7 @@ def attr_name(name: str, config: Config):
 def attr_quote(attr: AbbreviationAttribute, config: Config, is_open: bool=None):
     "Returns character for quoting value of given attribute"
     if attr.value_type == 'expression':
-        return '{' if is_open else '}'
+        return expression_start if is_open else expression_end
 
     return '\'' if config.options.get('output.attributeQuotes') == 'single' else '"'
 

@@ -2,12 +2,19 @@ from ...token_scanner import TokenScanner, TokenScannerException
 from ..tokenizer import tokens
 
 class TokenAttribute:
-    __slots__ = ('name', 'value', 'expression')
+    __slots__ = ('name', 'value', 'expression', 'multiple')
 
-    def __init__(self, name: list=None, value: list=None, expression: bool=False):
+    def __init__(self, name: list=None, value: list=None, expression: bool=False, multiple: bool=False):
         self.name = name
         self.value = value
         self.expression = expression
+
+        self.multiple = multiple
+        """
+        Indicates that current attribute was repeated multiple times in a row.
+        Used to alter output of multiple shorthand attributes like `..` (double class)
+        """
+
 
 
 class TokenElement:
@@ -130,7 +137,18 @@ def short_attribute(scanner: TokenScanner, attr_type: str, options: dict):
     "Consumes attribute shorthand (class or id) from given scanner"
     if is_operator(scanner.peek(), attr_type):
         scanner.pos += 1
+
+        # Consume multiple operators
+        count = 1
+        while (is_operator(scanner.peek(), attr_type)):
+            scanner.pos += 1
+            count += 1
+
+
         attr = TokenAttribute([create_literal(attr_type)])
+
+        if count > 1:
+            attr.multiple = True
 
         # Consume expression after shorthand start for React-like components
         if options.get('jsx') and text(scanner):

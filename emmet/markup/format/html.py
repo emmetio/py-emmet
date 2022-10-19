@@ -5,10 +5,16 @@ from .comment import comment_node_before, comment_node_after, CommentWalkState
 from ...abbreviation import Abbreviation, AbbreviationNode, AbbreviationAttribute
 from ...abbreviation.tokenizer.tokens import Field
 from ...config import Config
-from ...output_stream import tag_name, self_close, attr_name, is_boolean_attribute, attr_quote, is_inline
+from ...output_stream import tag_name, self_close, attr_name, is_boolean_attribute, attr_quote, is_inline, expression_start, expression_end
 from ...list_utils import some, find_index, get_item
 
 re_html_tag = re.compile(r'<([\w\-:]+)[\s>]')
+re_prop_key = re.compile(r'^[a-zA-Z_$][\w_$]*$')
+reserved_keywords = set([
+    'for', 'while', 'of', 'async', 'await', 'const', 'let', 'var', 'continue',
+    'break', 'debugger', 'do', 'export', 'import', 'in', 'instanceof', 'new', 'return',
+    'switch', 'this', 'throw', 'try', 'catch', 'typeof', 'void', 'with', 'yield'
+])
 
 class HTMLWalkState(WalkState):
     __slots__ = ('comment')
@@ -91,10 +97,29 @@ def push_attribute(attr: AbbreviationAttribute, state: WalkState):
     config = state.config
 
     if attr.name:
-        name = attr_name(attr.name, config)
+        attributes = config.options.get('markup.attributes')
+        value_prefix = config.options.get('markup.valuePrefix')
+
+        name = attr.name
+        value = attr.value
         l_quote = attr_quote(attr, config, True)
         r_quote = attr_quote(attr, config, False)
-        value = attr.value
+
+        if attributes:
+            name = get_multi_value(name, attributes, attr.multiple) or name
+
+        name = attr_name(name, config)
+        prefix = get_multi_value(attr.name, value_prefix, attr.multiple) if value_prefix else None
+
+        if prefix and value and len(value) == 1 and isinstance(value[0], str):
+            # Add given prefix in object notation
+            val = value[0]
+            fmt = '%s.%s' if is_prop_key(val) else "%s['%s']"
+            value = [fmt % (prefix, val)]
+
+            if config.options.get('jsx.enabled'):
+                l_quote = expression_start
+                r_quote = expression_end
 
         if is_boolean_attribute(attr, config) and not value:
             # If attribute value is omitted and it’s a boolean value, check for
@@ -232,3 +257,11 @@ def _next(items: list, walk_next: callable):
 
 def is_field(item):
     return isinstance(item, Field)
+
+
+def get_multi_value(key: str, data: dict, multiple: bool = False):
+    return multiple and data.get('%s*' % key) or data.get(key)
+
+
+def is_prop_key(name: str):
+    return name not in reserved_keywords and re_prop_key.match(name)

@@ -4,7 +4,7 @@ DEFAULT_SYNTAXES = { 'markup': 'html', 'stylesheet': 'css' }
 "Default syntaxes for abbreviation types"
 
 SYNTAXES = {
-    'markup': ['html', 'xml', 'xsl', 'jsx', 'js', 'pug', 'slim', 'haml'],
+    'markup': ['html', 'xml', 'xsl', 'jsx', 'js', 'pug', 'slim', 'haml', 'vue', 'svelte'],
     'stylesheet': ['css', 'sass', 'scss', 'less', 'sss', 'stylus']
 }
 "List of all known syntaxes"
@@ -96,6 +96,26 @@ SYNTAX_CONFIG = {
         }
     },
     'jsx': {
+        'options': {
+            'jsx.enabled': True,
+            'markup.attributes': {
+                'class': 'className',
+                'class*': 'styleName',
+                'for': 'htmlFor'
+            },
+            'markup.valuePrefix': {
+                'class*': 'styles'
+            }
+        }
+    },
+    'vue': {
+        'options': {
+            'markup.attributes': {
+                'class*': ':class',
+            }
+        }
+    },
+    'svelte': {
         'options': {
             'jsx.enabled': True
         }

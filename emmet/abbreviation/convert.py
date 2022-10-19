@@ -61,9 +61,9 @@ class AbbreviationNode:
 
 
 class AbbreviationAttribute:
-    __slots__ = ('name', 'value', 'value_type', 'boolean', 'implied')
+    __slots__ = ('name', 'value', 'value_type', 'boolean', 'implied', 'multiple')
 
-    def __init__(self, name: str, value: list, value_type='raw', boolean=False, implied=False):
+    def __init__(self, name: str, value: list, value_type='raw', boolean=False, implied=False, multiple=False):
         self.name = name
         self.value = value
         self.value_type = value_type
@@ -75,8 +75,11 @@ class AbbreviationAttribute:
         self.implied = implied
         "Attribute is implied (e.g.must be outputted only if contains non-null value)"
 
+        self.multiple = multiple
+        "Indicates that current attribute was repeated multiple times in a row"
+
     def copy(self):
-        return AbbreviationAttribute(self.name, self.value, self.value_type, self.boolean, self.implied)
+        return AbbreviationAttribute(self.name, self.value, self.value_type, self.boolean, self.implied, self.multiple)
 
 
 def convert(abbr: TokenGroup, params={}):
@@ -220,7 +223,7 @@ def create_attribute(node: TokenAttribute, state: ConvertState):
         if name[0] == '!':
             implied = True
             name = name[1:]
-    return AbbreviationAttribute(name, None, value_type, boolean, implied)
+    return AbbreviationAttribute(name, None, value_type, boolean, implied, node.multiple)
 
 def stringify_name(tokens: list, state: ConvertState):
     "Converts given token list to string"

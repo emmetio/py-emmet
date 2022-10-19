@@ -4,7 +4,6 @@ from .attributes import merge_attributes as attributes
 from .snippets import resolve_snippets as snippets
 from .implicit_tag import implicit_tag
 from .lorem import lorem
-from .addon.jsx import jsx
 from .addon.xsl import xsl
 from .addon.bem import bem
 from .format import html, haml, slim, pug
@@ -30,7 +29,8 @@ def parse(abbr: str, config: Config):
             'variables': config.variables,
             'options': config.options,
             'max_repeat': config.get('maxRepeat') or config.get('max_repeat'),
-            'jsx': bool(config.options.get('jsx.enabled'))
+            'jsx': bool(config.options.get('jsx.enabled')),
+            'href': config.options.get('markup.href')
         })
 
     # Run abbreviation resolve in two passes:
@@ -61,9 +61,6 @@ def transform(node: AbbreviationNode, ancestors: list, config: Config):
 
     if config.syntax == 'xsl':
         xsl(node)
-
-    if config.options.get('jsx.enabled'):
-        jsx(node)
 
     if config.options.get('bem.enabled'):
         bem(node, ancestors, config)
