@@ -3,15 +3,15 @@ from ...scanner_utils import is_quote, is_space, is_number, is_alpha, is_alpha_n
 from .utils import Chars, escaped
 from . import tokens
 
-OPERATOR_TYPES = dict([
-    (Chars.Child, 'child'),
-    (Chars.Sibling, 'sibling'),
-    (Chars.Climb, 'climb'),
-    (Chars.Dot, 'class'),
-    (Chars.Hash, 'id'),
-    (Chars.Slash, 'close'),
-    (Chars.Equals, 'equal')
-])
+OPERATOR_TYPES = {
+    Chars.Child: 'child',
+    Chars.Sibling: 'sibling',
+    Chars.Climb: 'climb',
+    Chars.Dot: 'class',
+    Chars.Hash: 'id',
+    Chars.Slash: 'close',
+    Chars.Equals: 'equal'
+}
 
 
 def tokenize(source: str):
