@@ -3,13 +3,13 @@ from .tokens import Chars, OperatorType
 from ...scanner import Scanner
 from ...scanner_utils import is_number, is_alpha, is_alpha_word, is_alpha_numeric_word, is_quote, is_space
 
-OPERATOR_MAP = dict([
-    (Chars.Sibling, OperatorType.Sibling),
-    (Chars.Excl, OperatorType.Important),
-    (Chars.Comma, OperatorType.ArgumentDelimiter),
-    (Chars.Colon, OperatorType.PropertyDelimiter),
-    (Chars.Dash, OperatorType.ValueDelimiter)
-])
+OPERATOR_MAP = {
+    Chars.Sibling: OperatorType.Sibling,
+    Chars.Excl: OperatorType.Important,
+    Chars.Comma: OperatorType.ArgumentDelimiter,
+    Chars.Colon: OperatorType.PropertyDelimiter,
+    Chars.Dash: OperatorType.ValueDelimiter
+}
 
 def tokenize(abbr: str, is_value=False):
     brackets = 0
