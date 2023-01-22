@@ -17,7 +17,8 @@ def tokenize(abbr: str, is_value=False):
     result = []
 
     while not scanner.eof():
-        token = field(scanner) or \
+        token = custom_property(scanner) or \
+            field(scanner) or \
             number_value(scanner) or \
             color_value(scanner) or \
             string_value(scanner) or \
@@ -212,6 +213,19 @@ def white_space(scanner: Scanner):
     start = scanner.pos
     if scanner.eat_while(is_space):
         return tokens.WhiteSpace(start, scanner.pos)
+
+def custom_property(scanner: Scanner):
+    "Consumes custom CSS property: --foo-bar"
+    start = scanner.pos
+    if scanner.eat(Chars.Dash) and scanner.eat(Chars.Dash):
+        scanner.start = start
+        scanner.eat_while(is_keyword)
+        token = tokens.CustomProperty(scanner.current())
+        token.end = scanner.pos
+
+        return token
+
+    scanner.pos = start
 
 def bracket(scanner: Scanner):
     "Consumes bracket from given scanner"

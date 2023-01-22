@@ -90,7 +90,7 @@ def output_value(value: CSSValue, out: OutputStream, config: Config):
 def output_token(token, out: OutputStream, config: Config):
     if isinstance(token, tokens.ColorValue):
         out.push(color(token, config.options.get('stylesheet.shortHex')))
-    elif isinstance(token, tokens.Literal):
+    elif isinstance(token, tokens.Literal) or isinstance(token, tokens.CustomProperty):
         out.push_string(token.value)
     elif isinstance(token, tokens.NumberValue):
         out.push_string(frac(token.value, 4) + token.unit)

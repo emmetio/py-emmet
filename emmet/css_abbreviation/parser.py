@@ -156,7 +156,8 @@ def is_value(token: tokens.Token):
         isinstance(token, tokens.ColorValue) or \
         isinstance(token, tokens.NumberValue) or \
         isinstance(token, tokens.Literal) or \
-        isinstance(token, tokens.Field)
+        isinstance(token, tokens.Field) or \
+        isinstance(token, tokens.CustomProperty)
 
 
 def is_value_delimiter(token: tokens.Token):

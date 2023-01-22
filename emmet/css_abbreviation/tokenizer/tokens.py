@@ -63,6 +63,14 @@ class Literal(Token):
         super(Literal, self).__init__(*args)
         self.value = value
 
+
+class CustomProperty(Token):
+    __slots__ = ('value', )
+
+    def __init__(self, value: str, *args):
+        super(CustomProperty, self).__init__(*args)
+        self.value = value
+
 class NumberValue(Token):
     __slots__ = ('value', 'raw_value', 'unit')
 

@@ -20,7 +20,8 @@ default_config = Config({
     'snippets': {
         'mten': 'margin: 10px;',
         'fsz': 'font-size',
-        'gt': 'grid-template: repeat(2,auto) / repeat(auto-fit, minmax(250px, 1fr))'
+        'gt': 'grid-template: repeat(2,auto) / repeat(auto-fit, minmax(250px, 1fr))',
+        'bxsh': 'box-shadow: var(--bxsh-${1})'
     },
     'cache': {}
 })
@@ -96,11 +97,15 @@ class TestStylesheetAbbreviations(unittest.TestCase):
         self.assertEqual(expand('gtc'), 'grid-template-columns: repeat(${0});')
         self.assertEqual(expand('gtr'), 'grid-template-rows: repeat(${0});')
 
-        self.assertEqual(expand('lis:n'), 'list-style: none;');
-        self.assertEqual(expand('list:n'), 'list-style-type: none;');
-        self.assertEqual(expand('bdt:n'), 'border-top: none;');
-        self.assertEqual(expand('bgi:n'), 'background-image: none;');
-        self.assertEqual(expand('q:n'), 'quotes: none;');
+        self.assertEqual(expand('lis:n'), 'list-style: none;')
+        self.assertEqual(expand('list:n'), 'list-style-type: none;')
+        self.assertEqual(expand('bdt:n'), 'border-top: none;')
+        self.assertEqual(expand('bgi:n'), 'background-image: none;')
+        self.assertEqual(expand('q:n'), 'quotes: none;')
+
+        # Custom properties
+        # https://github.com/emmetio/emmet/issues/692
+        self.assertEqual(expand('bxsh'), 'box-shadow: var(--bxsh-${1});')
 
     def test_numeric(self):
         self.assertEqual(expand('p0'), 'padding: 0;', 'No unit for 0')
