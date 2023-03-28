@@ -51,6 +51,7 @@ def tokenize(source: str):
 def literal(scanner: Scanner, ctx: dict):
     "Consumes literal from given scanner"
     start = scanner.pos
+    expression_start = ctx['expression']
     value = []
 
     while not scanner.eof():
@@ -74,16 +75,16 @@ def literal(scanner: Scanner, ctx: dict):
             # 3. Depending on context, some characters should be treated as operators
             break
 
-        if ctx['expression']:
+        if expression_start:
+            # Consume nested expressions, e.g. span{{foo}}
             if ch == Chars.CurlyBracketOpen:
-                # Handle nested curly braces inside expressions, e.g. `span{{foo}}`
                 ctx['expression'] += 1
             elif ch == Chars.CurlyBracketClose:
-                if ctx['expression'] == 1:
-                    break;
-                ctx['expression'] -= 1
-
-        if not ctx['quote'] and not ctx['expression']:
+                if ctx['expression'] > expression_start:
+                    ctx['expression'] -= 1
+                else:
+                    break
+        elif not ctx['quote']:
             # Consuming element name
             if not ctx['attribute'] and not is_element_name(ch):
                 break
