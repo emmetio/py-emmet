@@ -10,11 +10,11 @@ from ...list_utils import some, find_index, get_item
 
 re_html_tag = re.compile(r'<([\w\-:]+)[\s>]')
 re_prop_key = re.compile(r'^[a-zA-Z_$][\w_$]*$')
-reserved_keywords = set([
+reserved_keywords = {
     'for', 'while', 'of', 'async', 'await', 'const', 'let', 'var', 'continue',
     'break', 'debugger', 'do', 'export', 'import', 'in', 'instanceof', 'new', 'return',
     'switch', 'this', 'throw', 'try', 'catch', 'typeof', 'void', 'with', 'yield'
-])
+}
 
 class HTMLWalkState(WalkState):
     __slots__ = ('comment')

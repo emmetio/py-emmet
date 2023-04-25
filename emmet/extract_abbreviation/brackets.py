@@ -6,8 +6,8 @@ class Brackets:
     CurlyL = '{'
     CurlyR = '}'
 
-BRACE_PAIRS = dict([
-    (Brackets.SquareL, Brackets.SquareR),
-    (Brackets.RoundL, Brackets.RoundR),
-    (Brackets.CurlyL, Brackets.CurlyR),
-])
+BRACE_PAIRS = {
+    Brackets.SquareL: Brackets.SquareR,
+    Brackets.RoundL: Brackets.RoundR,
+    Brackets.CurlyL: Brackets.CurlyR
+}
