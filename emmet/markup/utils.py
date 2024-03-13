@@ -26,3 +26,14 @@ def find_deepest(node: AbbreviationNode):
         node = node.children[-1]
 
     return (parent, node)
+
+
+def find(node: AbbreviationNode, callback: callable):
+    "Finds first child node that matches given `callback`"
+    for child in node.children:
+        if callback(child):
+            return child
+
+        result = find(child, callback)
+        if result:
+            return result

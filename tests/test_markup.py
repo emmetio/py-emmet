@@ -32,6 +32,12 @@ class TestMarkupAbbreviation(unittest.TestCase):
         self.assertEqual(expand('xsl:variable[select]>div', config), '<xsl:variable><div></div></xsl:variable>')
         self.assertEqual(expand('xsl:with-param[select]{foo}', config), '<xsl:with-param>foo</xsl:with-param>')
 
+class TestLabelPreprocessor(unittest.TestCase):
+    def test_label(self):
+        self.assertEqual(expand('label>input'), '<label><input type="${1:text}" /></label>')
+        self.assertEqual(expand('label>inp'), '<label><input type="${1:text}" name="${1}" /></label>')
+        self.assertEqual(expand('label>span>input'), '<label><span><input type="${1:text}" /></span></label>')
+        self.assertEqual(expand('label+inp'), '<label for=""></label><input type="${1:text}" name="${1}" id="${1}" />')
 
 class TestBEMTransform(unittest.TestCase):
     def test_modifiers(self):

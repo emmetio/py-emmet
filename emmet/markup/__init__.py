@@ -6,6 +6,7 @@ from .implicit_tag import implicit_tag
 from .lorem import lorem
 from .addon.xsl import xsl
 from .addon.bem import bem
+from .addon.label import label
 from .format import html, haml, slim, pug
 from .utils import walk
 
@@ -61,6 +62,9 @@ def transform(node: AbbreviationNode, ancestors: list, config: Config):
 
     if config.syntax == 'xsl':
         xsl(node)
+
+    if config.type == 'markup':
+        label(node)
 
     if config.options.get('bem.enabled'):
         bem(node, ancestors, config)
