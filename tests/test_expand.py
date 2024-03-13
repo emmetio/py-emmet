@@ -32,6 +32,9 @@ class TestExpandMarkup(unittest.TestCase):
             }
         }), '<ul>\n\t<li class="item1">${1}</li>\n\t<li class="item2">${2}</li>\n</ul>')
 
+        # https://github.com/emmetio/emmet/issues/725
+        self.assertEqual(expand('textarea'), '<textarea name="" id=""></textarea>')
+
     def test_abbreviations(self):
         snippets = {
             'test': 'test[!foo bar. baz={}]'
